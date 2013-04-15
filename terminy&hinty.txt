@@ -1,0 +1,21 @@
+26.04 - wys³anie dokumentacji wstêpnej
+30.04 - konsultacja dokumentacji wstêpnej
+ 3.06 - kod Ÿród³owy rozwi¹zania, dokumentacja koñcowa + prezentacja
+
+
+Odnoœnie typowych aspektów na które zwracam uwagê:
+- niedopuszczalne "zawieszanie" siê w¹tku w oczekiwaniu na cokolwiek. Dotyczy to zarówno komunikacji wewnêtrznej w ramach pojedynczego wêz³a (miêdzy w¹tkami czy procesami) jak i komunikacji zewnêtrznej.
+
+- wszystko co przychodzi z zewnatrz systemu jest potencjalnie niebezpieczne.
+
+- czy zadania powierzone poszczególnym w¹tkom/procesom s¹ w³aœciwie rozdzielone (np. czy dany w¹tek nie odpowiada za kilka byæ mo¿e "ró¿nych" rzeczy?)
+
+- wymiana danych miêdzy w¹tkami/procesami - bufory, komunikacja synchronizuj¹ca itp
+
+- scenariusz "stawiania" rozproszonego systemu
+
+- bezpieczeñstwo transmisji.
+
+- bezpieczeñstwo dostêpu do systemu. w tym mieœci siê te¿ odpornoœæ na wszelkie dzia³ania typu DoS
+
+- obs³uga wyj¹tków, b³êdów i innych sytuacji krytycznych. zwalnianie pamiêci, zwalnianie uchwytów/deskryptorów i generalnie czyszczenie po sobie.
