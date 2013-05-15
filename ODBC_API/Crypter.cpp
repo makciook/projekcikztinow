@@ -10,6 +10,7 @@ Crypter::Crypter(Transporter *parent)
 
 Crypter::~Crypter(void)
 {
+
 }
 
 

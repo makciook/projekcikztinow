@@ -1,5 +1,6 @@
 #include "Coupler.h"
 #include "Md5.h"
+#include "Crypter.h"
 
 Coupler::Coupler(Crypter *parent)
 {
@@ -46,11 +47,12 @@ int Coupler::sendAndWait(const string &msg)
 			resend = false;
 	}
 	waitForMessage();
+	return 0;
 }
 
 int Coupler::sendAndLeave(void)
 {
-	
+	return 0;
 }
 
 
@@ -80,7 +82,7 @@ int Coupler::waitForMessage(void)
 		{
 			return 3;
 		}
-		int nError = WSAGetLastError(); 
+		nError = WSAGetLastError(); 
 		if (nError != WSAEWOULDBLOCK)								// winsock error
 		{
 			return 4;
@@ -122,6 +124,7 @@ int Coupler::waitForMessage(void)
 		}
 	}
 	parent->decrypt(buf);
+	return 0;
 }
 
 

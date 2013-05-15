@@ -24,12 +24,24 @@
     <ClInclude Include="Crypter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Md5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Coupler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Crypter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Md5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

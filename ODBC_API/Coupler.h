@@ -5,9 +5,9 @@
 #include <Windows.h>
 #include <string>
 
-#include "Crypter.h"
-
 using std::string;
+
+class Crypter;
 
 class Coupler
 {

@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
@@ -80,10 +80,14 @@
   <ItemGroup>
     <ClInclude Include="Coupler.h" />
     <ClInclude Include="Crypter.h" />
+    <ClInclude Include="Md5.h" />
+    <ClInclude Include="Transporter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Coupler.cpp" />
     <ClCompile Include="Crypter.cpp" />
+    <ClCompile Include="Md5.cpp" />
+    <ClCompile Include="Transporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
