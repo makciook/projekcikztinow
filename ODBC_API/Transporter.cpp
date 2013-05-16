@@ -28,7 +28,7 @@ int Transporter::encapsulate(Types type, const char* msg)
 }
 
 
-void Transporter::decapsulate(const char* msg)
+int Transporter::decapsulate(const char* msg)
 {
 	unsigned int typ;
 	memcpy((char*)msg, &typ, sizeof(typ));
@@ -36,10 +36,12 @@ void Transporter::decapsulate(const char* msg)
 	int size = strlen(msg)-sizeof(typ);
 	char *buffer = new char[size];
 	memcpy(buffer, msg+sizeof(typ),size);
+	int ret;
 	if(typ == Types::DB_EXEC)
-		parent->executionReply(buffer);
+		ret = parent->executionReply(buffer);
 	else
-		parent->systemReply(buffer);
+		ret = parent->systemReply(buffer);
+	return ret;
 	/*if(typ == Types::DB_CONNECT)
 		
 	else if(typ == Types::DB_DISCONNECT)

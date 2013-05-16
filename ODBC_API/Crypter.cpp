@@ -31,7 +31,7 @@ int Crypter::encrypt(const char* msg)
 }
 
 
-void Crypter::decrypt(const char* msg)
+int Crypter::decrypt(const char* msg)
 {
 	int lim = strlen(msg);
 	char* buffer = new char[lim];
@@ -41,8 +41,9 @@ void Crypter::decrypt(const char* msg)
 		c = msg[i] ^ klucz[i%32];
 		buffer[i] = c;
 	}
-	parent->decapsulate(buffer);
+	int ret = parent->decapsulate(buffer);
 	delete [] buffer;
+	return ret;
 }
 
 

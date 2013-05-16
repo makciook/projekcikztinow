@@ -82,6 +82,8 @@
     <ClInclude Include="Coupler.h" />
     <ClInclude Include="Crypter.h" />
     <ClInclude Include="Md5.h" />
+    <ClInclude Include="NDBC.h" />
+    <ClInclude Include="Query.h" />
     <ClInclude Include="Transporter.h" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +91,8 @@
     <ClCompile Include="Coupler.cpp" />
     <ClCompile Include="Crypter.cpp" />
     <ClCompile Include="Md5.cpp" />
+    <ClCompile Include="NDBC.cpp" />
+    <ClCompile Include="Query.cpp" />
     <ClCompile Include="Transporter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

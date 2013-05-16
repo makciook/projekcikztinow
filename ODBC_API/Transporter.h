@@ -15,7 +15,7 @@ public:
 	Transporter(Controller *parent);
 	~Transporter(void);
 	int encapsulate(Types type, const char* msg);
-	void decapsulate(const char* msg);
+	int decapsulate(const char* msg);
 	int connect(const char* addr, const char* msg);
 	void disconnect(void);
 };

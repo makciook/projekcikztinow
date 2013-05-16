@@ -46,9 +46,9 @@ int Coupler::sendAndWait(const char* msg)
 		if(strcmp(response, "Ok") == 0)
 			resend = false;
 	}
-	waitForMessage();
+	int ret = waitForMessage();
 	delete [] buffer;
-	return 0;
+	return ret;
 }
 
 int Coupler::sendAndLeave(void)
@@ -125,9 +125,9 @@ int Coupler::waitForMessage(void)
 			resend = false;
 		}
 	}
-	parent->decrypt(buf.c_str());
+	int ret = parent->decrypt(buf.c_str());
 	delete [] buffer;
-	return 0;
+	return ret;
 }
 
 
