@@ -17,21 +17,21 @@ Coupler::~Coupler(void)
 }
 
 
-int Coupler::sendAndWait(const string &msg)
+int Coupler::sendAndWait(const char* msg)
 {
 	string checkSum;
-	unsigned int size = msg.length();
+	unsigned int size = strlen(msg);
 	checkSum = md5(msg);
-	char s[10];
-	_itoa_s(size, s, 10);
-	string buffer(s);
-	buffer += checkSum;
-	buffer += msg;
+	char *buffer = new char[size+checkSum.length()+sizeof(size)];
+	size = htonl(size);
+	memcpy(&size, buffer, sizeof(size));
+	memcpy((char*)checkSum.c_str(), buffer+sizeof(size), checkSum.length());
+	memcpy((char*)msg, buffer+sizeof(size)+checkSum.length(), strlen(msg));
 	bool resend = true;
 	char response[10];
 	while(resend)
 	{
-		if(send(sock, buffer.c_str(), buffer.length(), 0) == SOCKET_ERROR)
+		if(send(sock, buffer, strlen(buffer), 0) == SOCKET_ERROR)
 			return 1;
 		int dataLength = recv(sock, response, sizeof(response), 0);
 		if (dataLength == 0)										// client disconnected
@@ -47,6 +47,7 @@ int Coupler::sendAndWait(const string &msg)
 			resend = false;
 	}
 	waitForMessage();
+	delete [] buffer;
 	return 0;
 }
 
@@ -63,6 +64,7 @@ int Coupler::waitForMessage(void)
     FD_SET(sock, &fd);
 	bool resend = false;
 	string buf;
+	char *buffer;
 
 	while(resend)
 	{
@@ -88,8 +90,8 @@ int Coupler::waitForMessage(void)
 			return 4;
 		}
 		size = ntohl(size);
-		char checksum[128];
-		dataLength = recv(sock, checksum, 128, 0);
+		char checksum[32];
+		dataLength = recv(sock, checksum, sizeof(checksum), 0);
 		if (dataLength == 0)										// client disconnected
 		{
 			return 3;
@@ -99,7 +101,7 @@ int Coupler::waitForMessage(void)
 		{
 			return 4;
 		}
-		char *buffer = new char[size];
+		buffer = new char[size];
 		dataLength = recv(sock, buffer, size, 0);
 		if (dataLength == 0)										// client disconnected
 		{
@@ -123,12 +125,13 @@ int Coupler::waitForMessage(void)
 			resend = false;
 		}
 	}
-	parent->decrypt(buf);
+	parent->decrypt(buf.c_str());
+	delete [] buffer;
 	return 0;
 }
 
 
-int Coupler::conn(string addr)
+int Coupler::conn(const char* addr)
 {
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	unsigned long opt = 1;
@@ -138,7 +141,7 @@ int Coupler::conn(string addr)
 		return 1;
 	SockAddr.sin_port = htons(27015);
 	SockAddr.sin_family = AF_INET;
-	SockAddr.sin_addr.S_un.S_addr = inet_addr(addr.c_str());
+	SockAddr.sin_addr.S_un.S_addr = inet_addr(addr);
 	if(connect(sock, (SOCKADDR *)(&SockAddr), sizeof(SockAddr)) == SOCKET_ERROR) 
 		return 2;
 	char klucz[32];

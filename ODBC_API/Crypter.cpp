@@ -1,4 +1,5 @@
 #include "Crypter.h"
+#include "Transporter.h"
 
 
 Crypter::Crypter(Transporter *parent)
@@ -14,43 +15,49 @@ Crypter::~Crypter(void)
 }
 
 
-int Crypter::encrypt(const string &msg)
+int Crypter::encrypt(const char* msg)
 {
-	string buffer;
+	int lim = strlen(msg);
+	char* buffer;
 	char c;
-	for(int i = 0; i < msg.length(); ++i)
+	for(int i = 0; i < lim; ++i)
 	{
 		c = msg[i] ^ klucz[i%32];
-		buffer += c;
+		buffer[i] = c;
 	}
-	return child->sendAndWait(msg);
+	int ret = child->sendAndWait(buffer);
+	delete [] buffer;
+	return ret;
 }
 
 
-void Crypter::decrypt(const string &msg)
+void Crypter::decrypt(const char* msg)
 {
-	string buffer;
+	int lim = strlen(msg);
+	char* buffer = new char[lim];
 	char c;
-	for(int i = 0; i < msg.length(); ++i)
+	for(int i = 0; i < lim; ++i)
 	{
 		c = msg[i] ^ klucz[i%32];
-		buffer += c;
+		buffer[i] = c;
 	}
 	parent->decapsulate(buffer);
+	delete [] buffer;
 }
 
 
-int Crypter::connect(const string &addr, const string &msg)
+int Crypter::connect(const char* addr, const char* msg)
 {
-	if(child->conn(addr) != 0)
-		return 1;
+	int ret = child->conn(addr);
+	if(ret != 0)
+		return ret;
 	return encrypt(msg);
 }
 
 
 void Crypter::disconnect(void)
 {
-
+	child->disconn();
 }
 
 

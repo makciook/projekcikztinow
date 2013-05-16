@@ -18,10 +18,10 @@ class Coupler
 public:
 	Coupler(Crypter *parent);
 	~Coupler(void);
-	int sendAndWait(const string &msg);
+	int sendAndWait(const char* msg);
 	int sendAndLeave();
 	int waitForMessage(void);
-	int conn(string addr);
+	int conn(const char* addr);
 	void disconn();
 };
 

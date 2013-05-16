@@ -1,18 +1,22 @@
 #ifndef TRANSPORTER_H
 #define TRANSPORTER_H
 
-#include <string>
+#include "Crypter.h"
 
-using std::string;
+class Controller;
+
+enum Types { DB_CONNECT, DB_DISCONNECT, DB_CON_STATE, DB_TRANSACTION, DB_COMMIT, DB_ROLLBACK, DB_EXEC }; 
 
 class Transporter
 {
+	Controller *parent;
+	Crypter *child;
 public:
-	Transporter(void);
+	Transporter(Controller *parent);
 	~Transporter(void);
-	void encapsulate(void);
-	void decapsulate(const string &msg);
-	void connect(void);
+	int encapsulate(Types type, const char* msg);
+	void decapsulate(const char* msg);
+	int connect(const char* addr, const char* msg);
 	void disconnect(void);
 };
 

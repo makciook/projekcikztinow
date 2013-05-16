@@ -78,12 +78,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Coupler.h" />
     <ClInclude Include="Crypter.h" />
     <ClInclude Include="Md5.h" />
     <ClInclude Include="Transporter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Coupler.cpp" />
     <ClCompile Include="Crypter.cpp" />
     <ClCompile Include="Md5.cpp" />

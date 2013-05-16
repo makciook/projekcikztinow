@@ -1,12 +1,9 @@
 #ifndef CRYPTER_H
 #define CRYPTER_H
 
-#include <string>
-
-#include "Transporter.h"
 #include "Coupler.h"
 
-using std::string;
+class Transporter;
 
 class Crypter
 {
@@ -16,9 +13,9 @@ class Crypter
 public:
 	Crypter(Transporter *parent);
 	~Crypter(void);
-	int encrypt(const string &msg);
-	void decrypt(const string &msg);
-	int connect(const string &addr, const string &msg);
+	int encrypt(const char* msg);
+	void decrypt(const char* msg);
+	int connect(const char* addr, const char* msg);
 	void disconnect(void);
 	void setKey(const char* key) { strcpy_s(klucz, key); }
 };
