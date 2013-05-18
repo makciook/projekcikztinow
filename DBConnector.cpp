@@ -25,41 +25,41 @@ void DBConnector::connect(string host, string user, string password, string db)
 	}
 }
 
-ResultSet* DBConnector::executeQuery(string query)
+string DBConnector::executeQuery(string query)
 {
+	int cols;
+	result = "";
+
 	try {
 		statement = connection->createStatement();
-		//resultSet = statement->executeQuery (query);
-		return statement->executeQuery(query);
+		resultSet = statement->executeQuery (query);
+		resultSetMetaData = resultSet->getMetaData();
+
+			while (resultSet->next())
+			{
+				cols = resultSetMetaData->getColumnCount();
+		
+				for (int i = 1; i < cols+1; i++)
+				{
+					//cout<<rsmd->getColumnType(i)<<endl;
+		
+					if (resultSetMetaData->getColumnType(i) == 13)
+					{
+							result+=resultSet->getString(i);
+							result+=":";
+					} 
+					else if (resultSetMetaData->getColumnType(i) == 5)
+					{
+							result+=to_string(resultSet->getInt(i));
+							result+=":";
+					} 
+				}
+				result+=";";
+			}
+			return result;
+
 	} catch (SQLException &e)
 	{
 		cout<<e.getErrorCode();
-	}
-}
-
-void DBConnector::printResult(ResultSet * rs)
-{
-	ResultSetMetaData *rsmd;
-	rsmd = rs->getMetaData();
-	int cols;
-	
-	while (rs->next())
-	{
-		cols = rsmd->getColumnCount();
-
-		for (int i = 1; i < cols+1; i++)
-		{
-			//cout<<rsmd->getColumnType(i)<<endl;
-
-			if (rsmd->getColumnType(i) == 13)
-			{
-					cout<< rs->getString(i) << "   ";
-			} 
-			else if (rsmd->getColumnType(i) == 5)
-			{
-					cout<< rs->getInt(i) << "   ";
-			} 
-		}
-		cout<<endl;
 	}
 }

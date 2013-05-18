@@ -18,11 +18,12 @@ class DBConnector
 	Connection *connection;
 	Statement *statement;
 	ResultSet *resultSet;
+	ResultSetMetaData *resultSetMetaData;
+	string result;
 public:
 	DBConnector(void);
 	~DBConnector(void);
 	void connect(string host, string user, string password, string db);
-	ResultSet* executeQuery(string query);
-	void printResult(ResultSet * rs);
+	string executeQuery(string query);
 };
 
