@@ -13,9 +13,9 @@ class Crypter
 public:
 	Crypter(Transporter *parent);
 	~Crypter(void);
-	int encrypt(const char* msg);
-	int decrypt(const char* msg);
-	int connect(const char* addr, const char* msg);
+	int encrypt(const char* msg, int length);
+	int decrypt(const char* msg, int length);
+	int connect(const char* addr, const char* msg, int length);
 	void disconnect(void);
 	void setKey(const char* key) { strcpy_s(klucz, key); }
 };

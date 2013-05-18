@@ -1,5 +1,7 @@
 #include "Query.h"
 
+unsigned int Query::counter = 0;
+
 Query::Query()
 {
 	++counter;
@@ -18,22 +20,22 @@ Query::Query(string query)
 
 int Query::getInt(int col)
 {
-
+	return 0;
 }
 
 double Query::getDouble(int col)
 {
-
+	return 0.0;
 }
 
 string Query::getString(int col)
 {
 
-
+	return "";
 }
 
 bool Query::next()
 {
 
-
+	return false;
 }

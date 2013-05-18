@@ -5,8 +5,8 @@
 Coupler::Coupler(Crypter *parent)
 {
 	this->parent = parent;
-	int timeout = 500;
-    tv.tv_sec = timeout/1000;
+	int timeout = 1500;
+    tv.tv_sec = (float)timeout/1000;
     tv.tv_usec = (timeout%1000)*1000;
 }
 
@@ -17,32 +17,53 @@ Coupler::~Coupler(void)
 }
 
 
-int Coupler::sendAndWait(const char* msg)
+int Coupler::sendAndWait(const char* msg, int length)
 {
 	string checkSum;
-	unsigned int size = strlen(msg);
+	int size = length;
 	checkSum = md5(msg);
-	char *buffer = new char[size+checkSum.length()+sizeof(size)];
+	int bufSize = size+checkSum.length()+sizeof(size)+1;
+	char *buffer = new char[bufSize];
 	size = htonl(size);
-	memcpy(&size, buffer, sizeof(size));
-	memcpy((char*)checkSum.c_str(), buffer+sizeof(size), checkSum.length());
-	memcpy((char*)msg, buffer+sizeof(size)+checkSum.length(), strlen(msg));
+	memcpy(buffer, &size, sizeof(size));
+	memcpy(buffer+sizeof(size), checkSum.c_str(), checkSum.length());
+	memcpy(buffer+sizeof(size)+checkSum.length(), msg, length);
+	buffer[bufSize-1] = '\0';
 	bool resend = true;
 	char response[10];
 	while(resend)
 	{
-		if(send(sock, buffer, strlen(buffer), 0) == SOCKET_ERROR)
+		/*std::cout << "Wysylam: (len = " << bufSize;
+		for(int i = 0; i < bufSize; ++i)
+			std::cout << buffer[i];
+		std::cout << "\n";*/
+		if(send(sock, buffer, bufSize, 0) == SOCKET_ERROR)
 			return 1;
+		fd_set fd;
+		FD_ZERO(&fd);
+		FD_SET(sock, &fd);
+		std::cout << "Czekam na odpowiedz\n";
+		int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
+		if (nError == 0)											// timeout
+		{
+			return 1;
+		}
+
+		if (nError == SOCKET_ERROR)									// winsock error
+		{
+			return 2;
+		}
 		int dataLength = recv(sock, response, sizeof(response), 0);
 		if (dataLength == 0)										// client disconnected
 		{
 			return 3;
 		}
-		int nError = WSAGetLastError(); 
-		if (nError != WSAEWOULDBLOCK)								// winsock error
+		nError = WSAGetLastError(); 
+		if (nError != 0)								// winsock error
 		{
 			return 4;
 		}
+		std::cout << "Odebrano odpowiedz: " << response << "\n";
 		if(strcmp(response, "Ok") == 0)
 			resend = false;
 	}
@@ -62,13 +83,14 @@ int Coupler::waitForMessage(void)
 	fd_set fd;
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
-	bool resend = false;
+	bool resend = true;
 	string buf;
 	char *buffer;
+	unsigned int size;
 
 	while(resend)
 	{
-		int nError = select(0, &fd, NULL, NULL, &tv);
+		int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
 		if (nError == 0)											// timeout
 		{
 			return 1;
@@ -78,14 +100,13 @@ int Coupler::waitForMessage(void)
 		{
 			return 2;
 		}
-		unsigned int size;
 		int dataLength = recv(sock, (char*)&size, sizeof(size), 0);
 		if (dataLength == 0)										// client disconnected
 		{
 			return 3;
 		}
 		nError = WSAGetLastError(); 
-		if (nError != WSAEWOULDBLOCK)								// winsock error
+		if (nError != 0)								// winsock error
 		{
 			return 4;
 		}
@@ -97,7 +118,7 @@ int Coupler::waitForMessage(void)
 			return 3;
 		}
 		nError = WSAGetLastError(); 
-		if (nError != WSAEWOULDBLOCK)								// winsock error
+		if (nError != 0)								// winsock error
 		{
 			return 4;
 		}
@@ -108,10 +129,11 @@ int Coupler::waitForMessage(void)
 			return 3;
 		}
 		nError = WSAGetLastError(); 
-		if (nError != WSAEWOULDBLOCK)								// winsock error
+		if (nError != 0)								// winsock error
 		{
 			return 4;
 		}
+		buffer[size] = '\0';
 		buf = buffer;
 		string checkSum(checksum);
 		if(md5(buf) != checkSum)
@@ -125,7 +147,7 @@ int Coupler::waitForMessage(void)
 			resend = false;
 		}
 	}
-	int ret = parent->decrypt(buf.c_str());
+	int ret = parent->decrypt(buf.c_str(), size);
 	delete [] buffer;
 	return ret;
 }
@@ -133,23 +155,28 @@ int Coupler::waitForMessage(void)
 
 int Coupler::conn(const char* addr)
 {
+	WSADATA WsaDat;
+    
+	if(WSAStartup(MAKEWORD(2,2),&WsaDat) != 0)
+		return 1;
 	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	unsigned long opt = 1;
-	//ioctlsocket(sock, FIONBIO, &opt);								// set socket to nonblocking
 
 	if(sock == INVALID_SOCKET)
 		return 1;
-	SockAddr.sin_port = htons(27015);
+	SockAddr.sin_port = htons( 27017 );
 	SockAddr.sin_family = AF_INET;
 	SockAddr.sin_addr.S_un.S_addr = inet_addr(addr);
+	std::cout << "Adres: \"" << addr << "\"\n";
 	if(connect(sock, (SOCKADDR *)(&SockAddr), sizeof(SockAddr)) == SOCKET_ERROR) 
 		return 2;
+	unsigned long opt = 1;
+	ioctlsocket(sock, FIONBIO, &opt);								// set socket to nonblocking
 	char klucz[32];
 	fd_set fd;
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
-
-    int nError = select(0, &fd, NULL, NULL, &tv);
+	std::cout << "Polaczono. Czekam na dane ...\n";
+    int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
     if (nError == 0)											// timeout
     {
 		return 3;
@@ -164,11 +191,13 @@ int Coupler::conn(const char* addr)
     {
 		return 5;
     }
-	if (nError != WSAEWOULDBLOCK)								// winsock error
+	nError = WSAGetLastError();
+	if (nError != 0)								// winsock error
     {
 		return 6;
     }
 	parent->setKey(klucz);
+	std::cout << "Ustawinono klucz " << klucz << "\n";
 	return 0;
 }
 

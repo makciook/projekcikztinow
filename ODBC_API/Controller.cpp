@@ -51,12 +51,12 @@ void Controller::serialize(Types type, string query, unsigned int id)
 		char *msg = new char[query.length() + sizeof(id)];
 		memcpy(msg, &id, sizeof(id));
 		memcpy(msg+sizeof(id), query.c_str(), query.length());
-		child->encapsulate(type, msg);
+		child->encapsulate(type, msg, query.length() + sizeof(id));
 		delete [] msg;
 	}
 	else
 	{
-		child->encapsulate(type, query.c_str());
+		child->encapsulate(type, query.c_str(), query.length());
 	}
 	
 }
@@ -71,7 +71,7 @@ void Controller::serializeConnectionData(string user, string pass, string db, st
 {
 	string msg;
 	msg = user +";" + pass + ";" + db;
-	child->connect(addr.c_str(), msg.c_str());
+	child->connect(addr.c_str(), msg.c_str(), msg.length());
 }
 
 void Controller::disconnect(void)

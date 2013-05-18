@@ -64,5 +64,5 @@ int NDBC::exec(Query *query)
 {
 	queries.push_back(query);
 	child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());
-
+	return 0;
 }

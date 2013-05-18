@@ -12,6 +12,7 @@ class Query
 	bool valid;
 	int row;
 	string error;
+
 	static unsigned int counter;
 
 public:
