@@ -30,7 +30,7 @@ int Query::getInt(int col)
 		node = node->next_sibling();
 		--i;
 	}
-	if(i == 0)
+	if(i == 0 && node != NULL)
 		return atoi(node->value());
 	else
 		return 0;
@@ -47,7 +47,7 @@ double Query::getDouble(int col)
 		node = node->next_sibling();
 		--i;
 	}
-	if(i == 0)
+	if(i == 0 && node != NULL)
 		return atof(node->value());
 	else
 		return 0.0;
@@ -63,8 +63,9 @@ string Query::getString(int col)
 	{
 		node = node->next_sibling();
 		--i;
+		cout << "Next\n";
 	}
-	if(i == 0)
+	if(i == 0 && node != NULL)
 		return node->value();
 	else
 		return string("");
@@ -86,13 +87,11 @@ void Query::setResult(const string &result)
 	this->result = result;
 	if(result == "")
 		return;
-	doc.parse<0>((char*)result.c_str());								// 0 means default parse flags
+	doc.parse<0>((char*)this->result.c_str());								// 0 means default parse flags
 	curNode = doc.first_node("data");
 	if(curNode == NULL)
 		return;
 	curNode = curNode->first_node("row");								// row with columns headers
-	if(curNode == NULL)
-		return;
 }
 
 void Query::resetQuery()
