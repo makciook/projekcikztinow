@@ -7,7 +7,7 @@ class Transporter;
 
 class Crypter
 {
-	char klucz[32];
+	char klucz[33];
 	Coupler *child;
 	Transporter *parent;
 public:

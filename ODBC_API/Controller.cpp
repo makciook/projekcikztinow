@@ -20,9 +20,9 @@ int Controller::executionReply(const char* msg)
 	memcpy(&ack, msg, sizeof(ack));
 	ack = ntohl(ack);
 	unsigned int id;
-	memcpy(&id, msg+sizeof(id), sizeof(id));
+	memcpy(&id, msg+sizeof(ack), sizeof(id));
 	id = ntohl(id);
-	string reply(msg+sizeof(id)*2);
+	string reply(msg+sizeof(id)+sizeof(ack));
 	parent->updateQuery(id, ack, reply);
 	return 0;
 }
@@ -44,21 +44,22 @@ int Controller::systemReply(const char* msg)
 }
 
 
-void Controller::serialize(Types type, string query, unsigned int id)
+int Controller::serialize(Types type, string query, unsigned int id)
 {
+	int ret;
 	if(id != 0)
 	{
 		char *msg = new char[query.length() + sizeof(id)];
 		memcpy(msg, &id, sizeof(id));
 		memcpy(msg+sizeof(id), query.c_str(), query.length());
-		child->encapsulate(type, msg, query.length() + sizeof(id));
+		ret = child->encapsulate(type, msg, query.length() + sizeof(id));
 		delete [] msg;
 	}
 	else
 	{
-		child->encapsulate(type, query.c_str(), query.length());
+		ret = child->encapsulate(type, query.c_str(), query.length());
 	}
-	
+	return ret;
 }
 
 

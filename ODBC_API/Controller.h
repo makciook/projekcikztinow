@@ -14,7 +14,7 @@ public:
 	~Controller(void);
 	int executionReply(const char* msg);
 	int systemReply(const char* msg);
-	void serialize(Types type, string query, unsigned int id = 0);
+	int serialize(Types type, string query, unsigned int id = 0);
 	void deserialize(void);
 	void serializeConnectionData(string user, string pass, string db, string addr);
 	void disconnect(void);

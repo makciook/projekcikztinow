@@ -31,6 +31,7 @@ int Coupler::sendAndWait(const char* msg, int length)
 	buffer[bufSize-1] = '\0';
 	bool resend = true;
 	char response[10];
+	int counter = 0;
 	while(resend)
 	{
 		/*std::cout << "Wysylam: (len = " << bufSize;
@@ -66,6 +67,15 @@ int Coupler::sendAndWait(const char* msg, int length)
 		std::cout << "Odebrano odpowiedz: " << response << "\n";
 		if(strcmp(response, "Ok") == 0)
 			resend = false;
+		else
+		{
+			++counter;
+			if(counter > 2)											// maksymalnie 3 razy ponawiamy próbê wys³ania
+			{
+				delete [] buffer;
+				return 5;
+			}
+		}
 	}
 	int ret = waitForMessage();
 	delete [] buffer;
@@ -171,7 +181,7 @@ int Coupler::conn(const char* addr)
 		return 2;
 	unsigned long opt = 1;
 	ioctlsocket(sock, FIONBIO, &opt);								// set socket to nonblocking
-	char klucz[32];
+	char klucz[33];
 	fd_set fd;
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
@@ -187,12 +197,13 @@ int Coupler::conn(const char* addr)
 		return 4;
     }
 	int dataLength = recv(sock, klucz, sizeof(klucz), 0);		// odebranie klucza
+	klucz[32] = '\0';
 	if (dataLength == 0)										// client disconnected
     {
 		return 5;
     }
 	nError = WSAGetLastError();
-	if (nError != 0)								// winsock error
+	if (nError != 0)											// winsock error
     {
 		return 6;
     }

@@ -21,9 +21,9 @@ public:
 	void connect(string user, string pass, string db, string addr);
 	void disconnect(void);
 	void getConnectionState(void);
-	void commit(void);
-	void rollback(void);
-	void transaction(void);
+	bool commit(void);
+	bool rollback(void);
+	bool transaction(void);
 	string getLastError(void);
 	int exec(Query *query);
 

@@ -2,6 +2,12 @@
 #define QUERY_H
 
 #include "NDBC.h"
+#include "RapidXml\rapidxml.hpp"
+#include "RapidXml\rapidxml_iterators.hpp"
+#include "RapidXml\rapidxml_print.hpp"
+#include "RapidXml\rapidxml_utils.hpp"
+
+using namespace rapidxml;
 
 class Query
 {
@@ -12,6 +18,8 @@ class Query
 	bool valid;
 	int row;
 	string error;
+	xml_document<> doc;								// character type defaults to char
+	xml_node<> *curNode;
 
 	static unsigned int counter;
 
@@ -30,10 +38,11 @@ public:
 
 private:
 	void setLastError(const string &error) { this->error = error; }
-	void setResult(const string &result) { this->result = result; }
+	void setResult(const string &result);
 	void setValid(bool valid) { this->valid = valid; }
 	string getQuery() { return this->query; }
 	unsigned int getId() { return this->id; }
+	void resetQuery();
 
 };
 

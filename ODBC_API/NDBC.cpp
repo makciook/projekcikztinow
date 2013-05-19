@@ -31,38 +31,72 @@ void NDBC::getConnectionState(void)
 }
 
 
-void NDBC::commit(void)
+bool NDBC::commit(void)
 {
-	child->serialize(Types::DB_COMMIT, "COMMIT");
+	if(child->serialize(Types::DB_COMMIT, "COMMIT") != 0)
+		return false;
+	else
+		return true;
 }
 
 
-void NDBC::rollback(void)
+bool NDBC::rollback(void)
 {
-	child->serialize(Types::DB_ROLLBACK, "ROLLBACK");
+	if(child->serialize(Types::DB_ROLLBACK, "ROLLBACK") != 0)
+		return false;
+	else
+		return true;
 }
 
 
-void NDBC::transaction(void)
+bool NDBC::transaction(void)
 {
-	child->serialize(Types::DB_TRANSACTION, "START TRANSACTION");
+	if(child->serialize(Types::DB_TRANSACTION, "START TRANSACTION") != 0)
+		return false;
+	else
+		return true;
 }
 
 
 string NDBC::getLastError(void)
 {
-	return error;
+	if(error == "")
+	{
+		char error[10];
+		itoa(WSAGetLastError(), error, 10);
+		return string(error);
+	}
+	else
+		return error;
 }
 
 void NDBC::updateQuery(int id, unsigned int ack, string &msg)
 {
-
-
+	for(int i = 0; i < queries.size(); ++i)
+	{
+		if(queries[i]->getId() == id)
+		{
+			if(ack == 0)
+			{
+				queries[i]->setResult(msg);
+				queries[i]->setLastError("");
+			}
+			else
+			{
+				queries[i]->setResult("");
+				queries[i]->setLastError(msg);
+			}
+			queries[i]->setValid(true);
+			queries.erase(queries.begin() + i, queries.end() + i);
+			break;
+		}
+	}
 }
 
 int NDBC::exec(Query *query)
 {
 	queries.push_back(query);
+	query->resetQuery();
 	child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());
 	return 0;
 }
