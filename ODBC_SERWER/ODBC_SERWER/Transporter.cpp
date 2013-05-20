@@ -29,6 +29,9 @@ int Transporter::encapsulate(Types type, const char* msg, int length)
 
 int Transporter::decapsulate(const char* msg, int length)
 {
+	char *buffer = new char[length];
+	memcpy(buffer, msg, length);
+	cout<<*buffer;
 	unsigned int typ;
 	memcpy(&typ, msg, sizeof(typ));
 	typ = ntohl(typ);
