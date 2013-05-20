@@ -24,7 +24,7 @@ void Serwer::running(ClientContext* ctx)
 
 	couplers[context->id].setSocket(context->sock);
 
-	char klucz[32] = {1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,0,1};
+	char klucz[32] = "abababababababababababababababa";
 
 	send( context->sock, klucz, 32, 0 );
 

@@ -4,7 +4,6 @@
 #include <Windows.h>
 #include <string>
 #include "Md5.h"
-#include "Crypter.h"
 
 using namespace std;
 

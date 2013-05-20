@@ -2,9 +2,7 @@
 #define CRYPTER_H
 
 #include "SCoupler.h"
-#include "Transporter.h"
 
-class SCoupler;
 class Transporter;
 
 class Crypter
@@ -19,7 +17,7 @@ public:
 	int decrypt(const char* msg, int length);
 	int connect(const char* addr, const char* msg, int length);
 	void disconnect(void);
-	void setKey(const char* key) { strcpy_s(klucz, key); }
+	void setKey(const char* key) { strcpy(klucz, key); }
 };
 
 #endif /* CRYPTER_H */

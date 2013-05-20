@@ -1,12 +1,12 @@
 #include "SCoupler.h"
+#include "Crypter.h"
 
 
 SCoupler::SCoupler()
 {
 	parent = new Crypter(this);
 	///
-	char key[32] = {1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,0,1};
-	parent->setKey(key);
+	//char key[32] = {1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,0,1};
 	///
 	int timeout = 1500;
     tv.tv_sec = (float)timeout/1000;
@@ -50,18 +50,20 @@ int SCoupler::waitForMessage()
 			return 4;
 		}
 		size = ntohl(size);
+		cout << "Size: " << size << "\n";
 		char checksum[32];
 		dataLength = recv(sock, checksum, sizeof(checksum), 0);
 		if (dataLength == 0)										// client disconnected
 		{
 			return 3;
 		}
+		cout << "Suma: " << checksum << "\n";
 		nError = WSAGetLastError(); 
 		if (nError != 0)								// winsock error
 		{
 			return 4;
 		}
-		buffer = new char[size];
+		buffer = new char[size+1];
 		dataLength = recv(sock, buffer, size, 0);
 		if (dataLength == 0)										// client disconnected
 		{
@@ -88,8 +90,7 @@ int SCoupler::waitForMessage()
 			resend = false;
 		}
 	}
-	cout<<"Message: "<<buf.c_str()<<endl;
-	int ret = parent->decrypt(buf.c_str(), size);
+	int ret = parent->decrypt(buffer, size);
 	//delete [] buffer;
 	return ret;
 	return 0;

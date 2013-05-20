@@ -14,8 +14,6 @@
 using namespace std;
 using namespace sql;
 
-class Transporter;
-
 class DBConnector
 {
 	Transporter* child;
