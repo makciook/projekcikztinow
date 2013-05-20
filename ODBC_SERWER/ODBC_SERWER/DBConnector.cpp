@@ -1,7 +1,8 @@
 #include "DBConnector.h"
 
-DBConnector::DBConnector(void)
+DBConnector::DBConnector(Transporter *child)
 {
+	this->child = child;
 }
 
 
@@ -41,21 +42,12 @@ string DBConnector::executeQuery(string query)
 		
 				for (int i = 1; i < cols+1; i++)
 				{
-					//cout<<rsmd->getColumnType(i)<<endl;
-		
-					if (resultSetMetaData->getColumnType(i) == 13)
-					{
-							result+=resultSet->getString(i);
-							result+=":";
-					} 
-					else if (resultSetMetaData->getColumnType(i) == 5)
-					{
-							result+=to_string(resultSet->getInt(i));
-							result+=":";
-					} 
+					result+=resultSet->getString(i);
+					result+=":";
 				}
 				result+=";";
 			}
+			cout<< result;
 			return result;
 
 	} catch (SQLException &e)

@@ -3,6 +3,8 @@
 #include <string>
 #include <stdexcept>
 
+#include "Transporter.h"
+
 #include <cppconn/driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/statement.h>
@@ -12,8 +14,11 @@
 using namespace std;
 using namespace sql;
 
+class Transporter;
+
 class DBConnector
 {
+	Transporter* child;
 	Driver *driver;
 	Connection *connection;
 	Statement *statement;
@@ -21,7 +26,7 @@ class DBConnector
 	ResultSetMetaData *resultSetMetaData;
 	string result;
 public:
-	DBConnector(void);
+	DBConnector(Transporter *child);
 	~DBConnector(void);
 	void connect(string host, string user, string password, string db);
 	string executeQuery(string query);

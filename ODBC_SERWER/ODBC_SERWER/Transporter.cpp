@@ -5,6 +5,7 @@
 Transporter::Transporter(Crypter* cry)
 {
 	this->child = cry;
+	this->parent =  new DBConnector(this);
 }
 
 
@@ -39,7 +40,12 @@ int Transporter::decapsulate(const char* msg, int length)
 	//	ret = parent->systemReply(msg+sizeof(typ));
 	ret = 0;
 
-	cout << " JESTEM TUTAJ ! "<<endl;
+	///
+	/// tymczasowo
+
+	//parent->connect("tcp://127.0.0.1:3306","bd2","bd2","bd2-baza");
+	cout<<msg;
+	//parent->executeQuery(msg);
 	return ret;
 	/*if(typ == Types::DB_CONNECT)
 		
