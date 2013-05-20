@@ -22,13 +22,15 @@ void Serwer::running(ClientContext* ctx)
 {
 	ClientContext *context = (ClientContext*)ctx;
 
+	couplers[context->id].setSocket(context->sock);
+
 	char klucz[32] = {1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,0,1};
 
 	send( context->sock, klucz, 32, 0 );
 
 	while(true)
 	{
-		couplers[context->id].waitForMessage(context->sock);
+		couplers[context->id].waitForMessage();
 	}
 	context->thread = NULL;
 }

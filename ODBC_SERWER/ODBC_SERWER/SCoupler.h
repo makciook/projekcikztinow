@@ -4,19 +4,23 @@
 #include <Windows.h>
 #include <string>
 #include "Md5.h"
+#include "Crypter.h"
 
 using namespace std;
 
+class Crypter;
 
 class SCoupler
 {
+	Crypter* parent;
 	SOCKET sock;
 	timeval tv;
 public:
 	SCoupler();
 	~SCoupler(void);
+	void setSocket(SOCKET socket) { sock = socket; };
 	/*void setParent(Crypter* cry);*/
-	int waitForMessage(SOCKET socket);
-	int sendMessage(const char* msg, int length, SOCKET socket);
+	int waitForMessage();
+	int sendMessage(const char* msg, int length);
 };
 

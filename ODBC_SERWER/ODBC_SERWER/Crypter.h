@@ -1,17 +1,19 @@
 #ifndef CRYPTER_H
 #define CRYPTER_H
 
-#include "Coupler.h"
+#include "SCoupler.h"
+#include "Transporter.h"
 
+class SCoupler;
 class Transporter;
 
 class Crypter
 {
 	char klucz[33];
-	Coupler *child;
+	SCoupler *child;
 	Transporter *parent;
 public:
-	Crypter(Transporter *parent);
+	Crypter(SCoupler* child);
 	~Crypter(void);
 	int encrypt(const char* msg, int length);
 	int decrypt(const char* msg, int length);

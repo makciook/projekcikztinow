@@ -63,15 +63,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Crypter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Md5.cpp" />
     <ClCompile Include="SCoupler.cpp" />
     <ClCompile Include="Serwer.cpp" />
+    <ClCompile Include="Transporter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Crypter.h" />
     <ClInclude Include="Md5.h" />
     <ClInclude Include="SCoupler.h" />
     <ClInclude Include="Serwer.h" />
+    <ClInclude Include="Transporter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,16 +3,16 @@
 
 #include "Crypter.h"
 
-class Controller;
 
 enum Types { DB_CONNECT, DB_DISCONNECT, DB_CON_STATE, DB_TRANSACTION, DB_COMMIT, DB_ROLLBACK, DB_EXEC }; 
 
+class Crypter;
+
 class Transporter
 {
-	Controller *parent;
 	Crypter *child;
 public:
-	Transporter(Controller *parent);
+	Transporter(Crypter* child);
 	~Transporter(void);
 	int encapsulate(Types type, const char* msg, int length);
 	int decapsulate(const char* msg, int length);

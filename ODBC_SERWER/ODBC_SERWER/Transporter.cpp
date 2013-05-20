@@ -1,12 +1,10 @@
 #include "Transporter.h"
-#include "Controller.h"
 
 #include <iostream>
 
-Transporter::Transporter(Controller *parent)
+Transporter::Transporter(Crypter* cry)
 {
-	this->parent = parent;
-	child = new Crypter(this);
+	this->child = cry;
 }
 
 
@@ -23,7 +21,7 @@ int Transporter::encapsulate(Types type, const char* msg, int length)
 	memcpy(buffer, &typ, sizeof(typ));
 	memcpy(buffer, msg, length);
 	int ret = child->encrypt(buffer, length+sizeof(typ));
-	delete [] buffer;
+	//delete [] buffer;
 	return ret;
 }
 
@@ -35,10 +33,13 @@ int Transporter::decapsulate(const char* msg, int length)
 	typ = ntohl(typ);
 	int size = length-sizeof(typ);
 	int ret;
-	if(typ == Types::DB_EXEC)
-		ret = parent->executionReply(msg+sizeof(typ));
-	else
-		ret = parent->systemReply(msg+sizeof(typ));
+	//if(typ == Types::DB_EXEC)
+	//	ret = parent->executionReply(msg+sizeof(typ));
+	//else
+	//	ret = parent->systemReply(msg+sizeof(typ));
+	ret = 0;
+
+	cout << " JESTEM TUTAJ ! "<<endl;
 	return ret;
 	/*if(typ == Types::DB_CONNECT)
 		
@@ -66,7 +67,7 @@ int Transporter::connect(const char* addr, const char* msg, int length)
 	memcpy(buffer+sizeof(typ), msg, length);
 	buffer[length + sizeof(typ)] = '\0';
 	int ret = child->connect(addr, msg, length+sizeof(typ));
-	delete [] buffer;
+	//delete [] buffer;
 	return ret;
 }
 

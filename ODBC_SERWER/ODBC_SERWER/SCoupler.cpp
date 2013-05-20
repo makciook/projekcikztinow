@@ -3,6 +3,7 @@
 
 SCoupler::SCoupler()
 {
+	parent = new Crypter(this);
 	int timeout = 1500;
     tv.tv_sec = (float)timeout/1000;
     tv.tv_usec = (timeout%1000)*1000;
@@ -12,9 +13,8 @@ SCoupler::~SCoupler(void)
 {
 }
 
-int SCoupler::waitForMessage(SOCKET socket)
+int SCoupler::waitForMessage()
 {
-	sock = socket;
 	fd_set fd;
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
@@ -85,15 +85,14 @@ int SCoupler::waitForMessage(SOCKET socket)
 		}
 	}
 	cout<<"Message: "<<buf.c_str()<<endl;
-	//int ret = parent->decrypt(buf.c_str(), size);
+	int ret = parent->decrypt(buf.c_str(), size);
 	//delete [] buffer;
-	//return ret;
+	return ret;
 	return 0;
 }
 
-int SCoupler::sendMessage(const char* msg, int length, SOCKET socket)
+int SCoupler::sendMessage(const char* msg, int length)
 {
-	sock = socket;
 	string checkSum;
 	int size = length;
 	checkSum = md5(msg);
@@ -138,8 +137,8 @@ int SCoupler::sendMessage(const char* msg, int length, SOCKET socket)
 		if(strcmp(response, "Ok") == 0)
 			resend = false;
 	}
-	//int ret = waitForMessage(sock);
+	int ret = waitForMessage();
 	//delete [] buffer;
-	//return ret;
+	return ret;
 	return 0;
 }
