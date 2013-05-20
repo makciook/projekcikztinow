@@ -44,7 +44,7 @@ int Transporter::decapsulate(const char* msg, int length)
 	/// tymczasowo
 
 	//parent->connect("tcp://127.0.0.1:3306","bd2","bd2","bd2-baza");
-	cout<<msg;
+	cout<<*msg;
 	//parent->executeQuery(msg);
 	return ret;
 	/*if(typ == Types::DB_CONNECT)

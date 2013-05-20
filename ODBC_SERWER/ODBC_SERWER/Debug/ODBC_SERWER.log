@@ -1,10 +1,10 @@
-﻿Build started 2013-05-11 16:06:08.
+﻿Build started 2013-05-11 16:22:53.
      1>Project "C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\ODBC_SERWER\ODBC_SERWER.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\ODBC_SERWER.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\mysql\include /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt SCoupler.cpp
-         SCoupler.cpp
+         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\mysql\include /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Crypter.cpp Transporter.cpp
+         Transporter.cpp
      1>c:\mysql\include\cppconn\sqlstring.h(38): warning C4251: 'sql::SQLString::realStr' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
                  with
                  [
@@ -19,7 +19,22 @@
                      _Traits=std::char_traits<char>,
                      _Alloc=std::allocator<char>
                  ]
-     1>c:\users\bartek\documents\svn\tinsvn\odbc_serwer\odbc_serwer\scoupler.cpp(12): warning C4244: '=' : conversion from 'float' to 'long', possible loss of data
+         Crypter.cpp
+     1>c:\mysql\include\cppconn\sqlstring.h(38): warning C4251: 'sql::SQLString::realStr' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Alloc=std::allocator<char>
+                 ]
+     1>c:\mysql\include\cppconn\exception.h(61): warning C4251: 'sql::SQLException::sql_state' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLException'
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Alloc=std::allocator<char>
+                 ]
+         Generating Code...
        Link:
          C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.exe" /INCREMENTAL /NOLOGO odbc32.lib odbccp32.lib Wsock32.lib mysqlcppconn.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.lib" /MACHINE:X86 Debug\Crypter.obj
          Debug\DBConnector.obj
@@ -36,4 +51,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:07.47
+Time Elapsed 00:00:12.55
