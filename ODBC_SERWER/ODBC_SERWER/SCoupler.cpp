@@ -4,6 +4,10 @@
 SCoupler::SCoupler()
 {
 	parent = new Crypter(this);
+	///
+	char key[32] = {1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,0,1};
+	parent->setKey(key);
+	///
 	int timeout = 1500;
     tv.tv_sec = (float)timeout/1000;
     tv.tv_usec = (timeout%1000)*1000;
