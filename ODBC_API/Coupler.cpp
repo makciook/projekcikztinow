@@ -94,7 +94,6 @@ int Coupler::waitForMessage(void)
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
 	bool resend = true;
-	string buf;
 	char *buffer;
 	unsigned int size;
 
@@ -121,8 +120,9 @@ int Coupler::waitForMessage(void)
 			return 4;
 		}
 		size = ntohl(size);
-		char checksum[32];
-		dataLength = recv(sock, checksum, sizeof(checksum), 0);
+		char checksum[33];
+		dataLength = recv(sock, checksum, 32, 0);
+		checksum[32] = '\0';
 		if (dataLength == 0)										// client disconnected
 		{
 			return 3;
@@ -132,7 +132,7 @@ int Coupler::waitForMessage(void)
 		{
 			return 4;
 		}
-		buffer = new char[size];
+		buffer = new char[size+1];
 		dataLength = recv(sock, buffer, size, 0);
 		if (dataLength == 0)										// client disconnected
 		{
@@ -144,7 +144,7 @@ int Coupler::waitForMessage(void)
 			return 4;
 		}
 		buffer[size] = '\0';
-		buf = buffer;
+		string buf(buffer);
 		string checkSum(checksum);
 		if(md5(buf) != checkSum)
 		{
@@ -157,7 +157,7 @@ int Coupler::waitForMessage(void)
 			resend = false;
 		}
 	}
-	int ret = parent->decrypt(buf.c_str(), size);
+	int ret = parent->decrypt(buffer, size);
 	delete [] buffer;
 	return ret;
 }

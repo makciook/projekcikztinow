@@ -44,7 +44,6 @@ int Crypter::decrypt(const char* msg, int length)
 	}
 	buffer[length] = '\0';
 	int ret = parent->decapsulate(buffer, length);
-	delete [] buffer;
 	return ret;
 }
 

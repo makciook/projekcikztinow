@@ -23,7 +23,6 @@ int Transporter::encapsulate(Types type, const char* msg, int length)
 	memcpy(buffer, &typ, sizeof(typ));
 	memcpy(buffer, msg, length);
 	int ret = child->encrypt(buffer, length+sizeof(typ));
-	delete [] buffer;
 	return ret;
 }
 
