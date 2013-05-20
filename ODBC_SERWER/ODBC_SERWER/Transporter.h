@@ -2,14 +2,17 @@
 #define TRANSPORTER_H
 
 #include "Crypter.h"
+#include "DBConnector.h"
 
 
 enum Types { DB_CONNECT, DB_DISCONNECT, DB_CON_STATE, DB_TRANSACTION, DB_COMMIT, DB_ROLLBACK, DB_EXEC }; 
 
+class DBConnector;
 class Crypter;
 
 class Transporter
 {
+	DBConnector *parent;
 	Crypter *child;
 public:
 	Transporter(Crypter* child);
