@@ -1,1 +1,0 @@
-katalog mysql umieszamy bezposrednio na dysku C.
