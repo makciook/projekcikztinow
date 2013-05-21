@@ -168,7 +168,7 @@ int Coupler::waitForMessage(void)
 			return 4;
 		}
 		buffer[size] = '\0';
-		string buf(buffer);
+		string buf(buffer, size);
 		string checkSum(checksum);
 		if(md5(buf) != checkSum)
 		{
