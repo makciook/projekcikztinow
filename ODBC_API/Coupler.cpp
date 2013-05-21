@@ -23,13 +23,13 @@ int Coupler::sendAndWait(const char* msg, int length)
 {
 	string checkSum;
 	int size = length;
-	checkSum = md5(msg);
+	checkSum = md5(string(msg, length));
 	int bufSize = size+checkSum.length()+sizeof(size);
 	char *buffer = new char[bufSize];
 	cout << "Wysylam size: " << size << "\n";
 	cout << "wysylam suma: \"" << checkSum << "\"\n";
 	cout << "Wysylam msg: \"";
-	for(int i = 0; i < 32; ++i)
+	for(int i = 0; i < length; ++i)
 		cout << msg[i];
 	cout << "\"\n";
 	size = htonl(size);
@@ -168,7 +168,7 @@ int Coupler::waitForMessage(void)
 			return 4;
 		}
 		buffer[size] = '\0';
-		string buf(buffer);
+		string buf(buffer, size);
 		string checkSum(checksum);
 		if(md5(buf) != checkSum)
 		{
