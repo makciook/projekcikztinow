@@ -16,7 +16,7 @@ public:
 	int systemReply(const char* msg);
 	int serialize(Types type, string query, unsigned int id = 0);
 	void deserialize(void);
-	void serializeConnectionData(string user, string pass, string db, string addr);
+	int serializeConnectionData(string user, string pass, string db, string addr);
 	void disconnect(void);
 };
 

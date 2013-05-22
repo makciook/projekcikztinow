@@ -5,6 +5,7 @@
 NDBC::NDBC(void)
 {
 	child = new Controller(this);
+	connected = false;
 }
 
 
@@ -13,9 +14,14 @@ NDBC::~NDBC(void)
 
 }
 
-void NDBC::connect(string user, string pass, string db, string addr)
+bool NDBC::connect(string user, string pass, string db, string addr)
 {
-	child->serializeConnectionData(user, pass, db, addr);
+	int ret = child->serializeConnectionData(user, pass, db, addr);
+	if(ret != 0)
+		connected = false;
+	else
+		connected = true;
+	return connected;
 }
 
 

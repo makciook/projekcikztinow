@@ -70,11 +70,11 @@ void Controller::deserialize(void)
 }
 
 
-void Controller::serializeConnectionData(string user, string pass, string db, string addr)
+int Controller::serializeConnectionData(string user, string pass, string db, string addr)
 {
 	string msg;
 	msg = user +";" + pass + ";" + db;
-	child->connect(addr.c_str(), msg.c_str(), msg.length());
+	return child->connect(addr.c_str(), msg.c_str(), msg.length());
 }
 
 void Controller::disconnect(void)
