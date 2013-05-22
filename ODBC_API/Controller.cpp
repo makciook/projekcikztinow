@@ -50,9 +50,10 @@ int Controller::serialize(Types type, string query, unsigned int id)
 	if(id != 0)
 	{
 		char *msg = new char[query.length() + sizeof(id)];
-		memcpy(msg, &id, sizeof(id));
-		memcpy(msg+sizeof(id), query.c_str(), query.length());
-		ret = child->encapsulate(type, msg, query.length() + sizeof(id));
+		unsigned int ajdi = htonl(id);
+		memcpy(msg, &ajdi, sizeof(ajdi));
+		memcpy(msg+sizeof(ajdi), query.c_str(), query.length());
+		ret = child->encapsulate(type, msg, query.length() + sizeof(ajdi));
 		delete [] msg;
 	}
 	else
