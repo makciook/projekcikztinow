@@ -15,10 +15,11 @@ class NDBC
 	vector<Query*> queries;
 	Controller *child;
 	string error;
+	bool connected;
 public:
 	NDBC(void);
 	~NDBC(void);
-	void connect(string user, string pass, string db, string addr);
+	bool connect(string user, string pass, string db, string addr);
 	void disconnect(void);
 	void getConnectionState(void);
 	bool commit(void);
