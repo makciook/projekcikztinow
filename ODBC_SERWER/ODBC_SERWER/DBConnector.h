@@ -21,13 +21,13 @@ class DBConnector
 	Connection *connection;
 	Statement *statement;
 	ResultSet *resultSet;
-	ResultSetMetaData *resultSetMetaData;
+	ResultSetMetaData *rsmd;
 	string result;
 public:
 	DBConnector(Transporter *child);
 	~DBConnector(void);
 	int connect(string host, string user, string password, string db);
-	int executeQuery(string query);
+	int executeQuery(string query, unsigned int id);
 	string getResult() { return result; }
 };
 

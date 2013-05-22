@@ -62,10 +62,10 @@ int Transporter::decapsulate(const char* msg, int length)
 		string db = strtok(NULL,";");
 		string address = "tcp://127.0.0.1:3306";
 
-		int ret = parent->connect(address,user,pass,db);
+		/*int ret = */parent->connect(address,user,pass,db);
 
-		string result = parent->getResult();
-		encapsulate((Types)typ,ret,result.c_str(),result.length());
+		//string result = parent->getResult();
+		//encapsulate((Types)typ,ret,result.c_str(),result.length());
 	}
 	else
 	{
@@ -74,9 +74,9 @@ int Transporter::decapsulate(const char* msg, int length)
 		memcpy(&id, msg+sizeof(typ), sizeof(id));
 		id = ntohl(id);
 		cout << "Odpowiadam na id: " << id << "\n";
-		int ack = parent->executeQuery(msg+sizeof(typ)+sizeof(id));
-		string result = parent->getResult();
-		encapsulate((Types)typ,ack,result.c_str(),result.length(), id);
+		/*int ack = */parent->executeQuery(msg+sizeof(typ)+sizeof(id),id);
+		//string result = parent->getResult();
+		//encapsulate((Types)typ,ack,result.c_str(),result.length(), id);
 	}
 	return 4;
 }
