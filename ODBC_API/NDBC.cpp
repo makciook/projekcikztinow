@@ -28,6 +28,7 @@ bool NDBC::connect(string user, string pass, string db, string addr)
 void NDBC::disconnect(void)
 {
 	child->disconnect();
+	connected = false;
 }
 
 
@@ -40,7 +41,10 @@ void NDBC::getConnectionState(void)
 bool NDBC::commit(void)
 {
 	if(child->serialize(Types::DB_COMMIT, "COMMIT") != 0)
+	{
+		connected = false;
 		return false;
+	}
 	else
 		return true;
 }
@@ -49,7 +53,10 @@ bool NDBC::commit(void)
 bool NDBC::rollback(void)
 {
 	if(child->serialize(Types::DB_ROLLBACK, "ROLLBACK") != 0)
+	{
+		connected = false;
 		return false;
+	}
 	else
 		return true;
 }
@@ -58,7 +65,10 @@ bool NDBC::rollback(void)
 bool NDBC::transaction(void)
 {
 	if(child->serialize(Types::DB_TRANSACTION, "START TRANSACTION") != 0)
+	{
+		connected = false;
 		return false;
+	}
 	else
 		return true;
 }

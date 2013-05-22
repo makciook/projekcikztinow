@@ -21,7 +21,6 @@ int Crypter::encrypt(const char* msg, int length)
 {
 	char* buffer = new char[length+1];
 	char c;
-	//std::cout << "Crypt: " << string(msg, length) << "\n";
 	for(int i = 0; i < length; ++i)
 	{
 		c = msg[i] ^ klucz[i%32];
