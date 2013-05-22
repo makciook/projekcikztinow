@@ -63,7 +63,7 @@ int Transporter::connect(const char* addr, const char* msg, int length)
 	char *buffer = new char[length + sizeof(typ)];
 	memcpy(buffer, &typ, sizeof(typ));
 	memcpy(buffer+sizeof(typ), msg, length);
-	int ret = child->connect(addr, msg, length+sizeof(typ));
+	int ret = child->connect(addr, buffer, length+sizeof(typ));
 	delete [] buffer;
 	return ret;
 }
