@@ -5,7 +5,6 @@
 NDBC::NDBC(void)
 {
 	child = new Controller(this);
-	connected = false;
 }
 
 
@@ -14,22 +13,14 @@ NDBC::~NDBC(void)
 
 }
 
-bool NDBC::connect(string user, string pass, string db, string addr)
+void NDBC::connect(string user, string pass, string db, string addr)
 {
-	int ret = child->serializeConnectionData(user, pass, db, addr);
-	if(ret == 0)
-		connected = true;
-	else
-		connected = false;
-	return connected;
-
+	child->serializeConnectionData(user, pass, db, addr);
 }
 
 
 void NDBC::disconnect(void)
 {
-	if(!connected)
-		return;
 	child->disconnect();
 }
 
@@ -42,8 +33,6 @@ void NDBC::getConnectionState(void)
 
 bool NDBC::commit(void)
 {
-	if(!connected)
-		return false;
 	if(child->serialize(Types::DB_COMMIT, "COMMIT") != 0)
 		return false;
 	else
@@ -53,8 +42,6 @@ bool NDBC::commit(void)
 
 bool NDBC::rollback(void)
 {
-	if(!connected)
-		return false;
 	if(child->serialize(Types::DB_ROLLBACK, "ROLLBACK") != 0)
 		return false;
 	else
@@ -64,8 +51,6 @@ bool NDBC::rollback(void)
 
 bool NDBC::transaction(void)
 {
-	if(!connected)
-		return false;
 	if(child->serialize(Types::DB_TRANSACTION, "START TRANSACTION") != 0)
 		return false;
 	else
@@ -110,8 +95,6 @@ void NDBC::updateQuery(int id, unsigned int ack, string &msg)
 
 int NDBC::exec(Query *query)
 {
-	if(!connected)
-		return false;
 	queries.push_back(query);
 	query->resetQuery();
 	child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());

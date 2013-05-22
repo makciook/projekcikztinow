@@ -63,7 +63,6 @@ string Query::getString(int col)
 	{
 		node = node->next_sibling();
 		--i;
-		cout << "Next\n";
 	}
 	if(i == 0 && node != NULL)
 		return node->value();
@@ -90,7 +89,10 @@ void Query::setResult(const string &result)
 	doc.parse<0>((char*)this->result.c_str());								// 0 means default parse flags
 	curNode = doc.first_node("row");
 	if(curNode == NULL)
+	{
+		cout << "Nie ma node!\n";
 		return;
+	}
 }
 
 void Query::resetQuery()

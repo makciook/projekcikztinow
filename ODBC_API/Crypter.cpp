@@ -21,6 +21,7 @@ int Crypter::encrypt(const char* msg, int length)
 {
 	char* buffer = new char[length+1];
 	char c;
+	//std::cout << "Crypt: " << string(msg, length) << "\n";
 	for(int i = 0; i < length; ++i)
 	{
 		c = msg[i] ^ klucz[i%32];
@@ -43,6 +44,7 @@ int Crypter::decrypt(const char* msg, int length)
 		buffer[i] = c;
 	}
 	buffer[length] = '\0';
+	std::cout << string(buffer, length) << "\n";
 	int ret = parent->decapsulate(buffer, length);
 	return ret;
 }

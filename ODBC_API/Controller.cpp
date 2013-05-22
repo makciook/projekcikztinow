@@ -1,6 +1,7 @@
 #include "Controller.h"
 #include "NDBC.h"
 
+#include <iostream>
 
 Controller::Controller(NDBC *parent)
 {
@@ -49,8 +50,8 @@ int Controller::serialize(Types type, string query, unsigned int id)
 	int ret;
 	if(id != 0)
 	{
-		char *msg = new char[query.length() + sizeof(id)];
 		unsigned int ajdi = htonl(id);
+		char *msg = new char[query.length() + sizeof(ajdi)];
 		memcpy(msg, &ajdi, sizeof(ajdi));
 		memcpy(msg+sizeof(ajdi), query.c_str(), query.length());
 		ret = child->encapsulate(type, msg, query.length() + sizeof(ajdi));
@@ -69,11 +70,11 @@ void Controller::deserialize(void)
 }
 
 
-int Controller::serializeConnectionData(string user, string pass, string db, string addr)
+void Controller::serializeConnectionData(string user, string pass, string db, string addr)
 {
 	string msg;
 	msg = user +";" + pass + ";" + db;
-	return child->connect(addr.c_str(), msg.c_str(), msg.length());
+	child->connect(addr.c_str(), msg.c_str(), msg.length());
 }
 
 void Controller::disconnect(void)
