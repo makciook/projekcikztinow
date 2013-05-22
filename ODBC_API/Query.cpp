@@ -88,10 +88,9 @@ void Query::setResult(const string &result)
 	if(result == "")
 		return;
 	doc.parse<0>((char*)this->result.c_str());								// 0 means default parse flags
-	curNode = doc.first_node("data");
+	curNode = doc.first_node("row");
 	if(curNode == NULL)
 		return;
-	curNode = curNode->first_node("row");								// row with columns headers
 }
 
 void Query::resetQuery()

@@ -21,7 +21,7 @@ int Transporter::encapsulate(Types type, const char* msg, int length)
 	typ = htonl(typ);
 	char *buffer = new char[length + sizeof(typ)];
 	memcpy(buffer, &typ, sizeof(typ));
-	memcpy(buffer, msg, length);
+	memcpy(buffer+sizeof(typ), msg, length);
 	int ret = child->encrypt(buffer, length+sizeof(typ));
 	return ret;
 }
@@ -60,10 +60,9 @@ int Transporter::connect(const char* addr, const char* msg, int length)
 {
 	unsigned int typ = Types::DB_CONNECT;
 	typ = htonl(typ);
-	char *buffer = new char[length + sizeof(typ)+1];
+	char *buffer = new char[length + sizeof(typ)];
 	memcpy(buffer, &typ, sizeof(typ));
 	memcpy(buffer+sizeof(typ), msg, length);
-	buffer[length + sizeof(typ)] = '\0';
 	int ret = child->connect(addr, msg, length+sizeof(typ));
 	delete [] buffer;
 	return ret;
