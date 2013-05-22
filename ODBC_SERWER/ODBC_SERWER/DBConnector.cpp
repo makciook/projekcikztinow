@@ -14,22 +14,26 @@ DBConnector::~DBConnector(void)
 		delete connection;
 }
 
-void DBConnector::connect(string host, string user, string password, string db)
+int DBConnector::connect(string host, string user, string password, string db)
 {
 	try {
 		driver = get_driver_instance();
 		connection = driver->connect(host, user, password);
 		connection->setSchema(db);
+		result = "";
 	} catch (SQLException &e)
 	{
-		cout<<e.getErrorCode();
+		result = e.getSQLState();
+		return 1;
 	}
+	return 0;
 }
 
-string DBConnector::executeQuery(string query)
+int DBConnector::executeQuery(string query)
 {
 	int cols;
 
+	cout << "EXECUTING: "<<query<<endl;
 	try {
 		statement = connection->createStatement();
 		resultSet = statement->executeQuery (query);
@@ -38,7 +42,7 @@ string DBConnector::executeQuery(string query)
 		result ="";
 		result += "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
 		result +='\n';
-		result = "<row type=\"header\">";
+		result += "<row type=\"header\">";
 		result +='\n';
 		
 		cols = resultSetMetaData->getColumnCount();
@@ -69,10 +73,11 @@ string DBConnector::executeQuery(string query)
 								result += "</row>";
 								result +='\n';
 			}
-			return result;
+			return 0;
 
 	} catch (SQLException &e)
 	{
-		cout<<e.getErrorCode();
+		result = e.getErrorCode();
+		return 1;
 	}
 }

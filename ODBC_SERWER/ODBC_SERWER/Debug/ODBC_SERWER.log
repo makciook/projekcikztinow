@@ -1,9 +1,9 @@
-﻿Build started 2013-05-12 21:16:20.
-     1>Project "C:\Users\Bartek\Desktop\ODBC_SERWER\ODBC_SERWER\ODBC_SERWER.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2013-05-13 16:52:52.
+     1>Project "C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\ODBC_SERWER\ODBC_SERWER.vcxproj" on node 2 (Build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\ODBC_SERWER.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Bartek\Desktop\Boost\include\boost-1_51" /IC:\mysql\include /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Crypter.cpp DBConnector.cpp main.cpp Md5.cpp SCoupler.cpp Transporter.cpp
+         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Bartek\Desktop\Boost\include\boost-1_51" /IC:\mysql\include /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Transporter.cpp
          Transporter.cpp
      1>c:\mysql\include\cppconn\sqlstring.h(38): warning C4251: 'sql::SQLString::realStr' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
                  with
@@ -19,61 +19,23 @@
                      _Traits=std::char_traits<char>,
                      _Alloc=std::allocator<char>
                  ]
-     1>c:\users\bartek\desktop\odbc_serwer\odbc_serwer\transporter.cpp(35): warning C4101: 'ret' : unreferenced local variable
-         SCoupler.cpp
-     1>c:\users\bartek\desktop\odbc_serwer\odbc_serwer\scoupler.cpp(10): warning C4244: '=' : conversion from 'float' to 'long', possible loss of data
-     1>c:\users\bartek\desktop\odbc_serwer\odbc_serwer\scoupler.cpp(75): warning C4018: '<' : signed/unsigned mismatch
-         Md5.cpp
-     1>c:\users\bartek\desktop\odbc_serwer\odbc_serwer\md5.cpp(310): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files\microsoft visual studio 11.0\vc\include\stdio.h(357) : see declaration of 'sprintf'
-         main.cpp
-         DBConnector.cpp
-     1>c:\mysql\include\cppconn\sqlstring.h(38): warning C4251: 'sql::SQLString::realStr' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
-                 with
-                 [
-                     _Elem=char,
-                     _Traits=std::char_traits<char>,
-                     _Alloc=std::allocator<char>
-                 ]
-     1>c:\mysql\include\cppconn\exception.h(61): warning C4251: 'sql::SQLException::sql_state' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLException'
-                 with
-                 [
-                     _Elem=char,
-                     _Traits=std::char_traits<char>,
-                     _Alloc=std::allocator<char>
-                 ]
-         Crypter.cpp
-     1>c:\mysql\include\cppconn\sqlstring.h(38): warning C4251: 'sql::SQLString::realStr' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
-                 with
-                 [
-                     _Elem=char,
-                     _Traits=std::char_traits<char>,
-                     _Alloc=std::allocator<char>
-                 ]
-     1>c:\mysql\include\cppconn\exception.h(61): warning C4251: 'sql::SQLException::sql_state' : class 'std::basic_string<_Elem,_Traits,_Alloc>' needs to have dll-interface to be used by clients of class 'sql::SQLException'
-                 with
-                 [
-                     _Elem=char,
-                     _Traits=std::char_traits<char>,
-                     _Alloc=std::allocator<char>
-                 ]
-         Generating Code...
+     1>c:\users\bartek\documents\svn\tinsvn\odbc_serwer\odbc_serwer\transporter.cpp(47): warning C4101: 'ret' : unreferenced local variable
        ResourceCompile:
-         C:\Program Files\Windows Kits\8.0\bin\x86\rc.exe /l"0x0409" /nologo /fo"Debug\ODBC_SERWER.res" ODBC_SERWER.rc 
+         All outputs are up-to-date.
        Link:
-         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Bartek\Desktop\ODBC_SERWER\Debug\ODBC_SERWER.exe" /INCREMENTAL /NOLOGO odbc32.lib odbccp32.lib Wsock32.lib mysqlcppconn.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Bartek\Desktop\ODBC_SERWER\Debug\ODBC_SERWER.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Bartek\Desktop\ODBC_SERWER\Debug\ODBC_SERWER.lib" /MACHINE:X86 Debug\ODBC_SERWER.res
+         C:\Program Files\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.exe" /INCREMENTAL /NOLOGO odbc32.lib odbccp32.lib Wsock32.lib mysqlcppconn.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.lib" /MACHINE:X86 Debug\ODBC_SERWER.res
          Debug\Crypter.obj
          Debug\DBConnector.obj
          Debug\main.obj
          Debug\Md5.obj
          Debug\SCoupler.obj
          Debug\Transporter.obj
-         ODBC_SERWER.vcxproj -> C:\Users\Bartek\Desktop\ODBC_SERWER\Debug\ODBC_SERWER.exe
+         ODBC_SERWER.vcxproj -> C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\Debug\ODBC_SERWER.exe
        FinalizeBuildStatus:
          Deleting file "Debug\ODBC_SERWER.unsuccessfulbuild".
          Touching "Debug\ODBC_SERWER.lastbuildstate".
-     1>Done Building Project "C:\Users\Bartek\Desktop\ODBC_SERWER\ODBC_SERWER\ODBC_SERWER.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\Bartek\Documents\SVN\tinSVN\ODBC_SERWER\ODBC_SERWER\ODBC_SERWER.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:34.38
+Time Elapsed 00:00:08.71

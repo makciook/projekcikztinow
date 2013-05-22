@@ -26,7 +26,8 @@ class DBConnector
 public:
 	DBConnector(Transporter *child);
 	~DBConnector(void);
-	void connect(string host, string user, string password, string db);
-	string executeQuery(string query);
+	int connect(string host, string user, string password, string db);
+	int executeQuery(string query);
+	string getResult() { return result; }
 };
 
