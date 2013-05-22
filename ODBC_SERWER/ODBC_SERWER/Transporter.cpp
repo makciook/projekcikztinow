@@ -46,25 +46,24 @@ int Transporter::decapsulate(const char* msg, int length)
 	int size = length-sizeof(typ);
 	int ret;
 
-	//string message(msg);
-	//cout << "Transport msg: ";
-	//for(int i = 0; i < length; ++i)
-	//	cout << msg[i];
-	//cout << "\n";dsds
-
-	//unsigned int dupa = 1;
-	//dupa = htonl(dupa);
-	//char * bufferdupa = new char[sizeof("Hello!")+sizeof(dupa)];
-	//memcpy(bufferdupa,&dupa,sizeof(dupa));
-	//memcpy(bufferdupa+sizeof(dupa),"Hello!",sizeof("Hello!"));
-
-	//encapsulate((Types)typ,bufferdupa,sizeof("Hello!")+sizeof(dupa));dsds
 
 	cout << "TYP ZAPYTANIA : "<<typ<<" typ connect"<<Types::DB_CONNECT<<endl;
 	if (typ == Types::DB_CONNECT)
 	{
-		cout<<"CONNECTING TO DB"<<endl;
-		int ret = parent->connect("tcp://127.0.0.1:3306","bd23","bd2","bd2-baza");
+		cout<<"CONNECTING TO DB:"<<endl;
+
+		char* str = new char[size+1];
+		char* pch;
+		memcpy(str,msg+sizeof(typ),size);
+		str[size] ='\0';
+
+		string user = strtok (str,";");
+		string pass = strtok(NULL,";");
+		string db = strtok(NULL,";");
+		string address = "tcp://127.0.0.1:3306";
+
+		int ret = parent->connect(address,user,pass,db);
+
 		string result = parent->getResult();
 		encapsulate((Types)typ,ret,result.c_str(),result.length());
 	}
@@ -79,15 +78,6 @@ int Transporter::decapsulate(const char* msg, int length)
 		string result = parent->getResult();
 		encapsulate((Types)typ,ack,result.c_str(),result.length(), id);
 	}
-
-
-	//parent->connect("tcp://127.0.0.1:3306","bd2","bd2","bd2-baza");
-	//parent->executeQuery();
-	//if(typ == Types::DB_EXEC)
-	//	ret = parent->executionReply(msg+sizeof(typ));
-	//else
-	//	ret = parent->systemReply(msg+sizeof(typ));
-	//return ret;
 	return 4;
 }
 

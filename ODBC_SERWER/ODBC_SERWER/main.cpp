@@ -50,7 +50,8 @@ DWORD WINAPI processClient (LPVOID ctx)
 
 	while(true)
 	{
-		couplers[context->id].waitForMessage();
+		if (couplers[context->id].waitForMessage() != 0)
+			break;
 	}
  
     context->thread = NULL;
