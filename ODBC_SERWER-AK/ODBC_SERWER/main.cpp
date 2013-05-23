@@ -17,15 +17,7 @@ int clients_num = 0;
  
 void ShutdownServer()
 {
-    for (int i = 0; i < clients.size(); i++)
-        if (clients[i].sock != INVALID_SOCKET)
-        {
-            closesocket (clients[i].sock);
-            clients[i].sock = INVALID_SOCKET;
-        }
- 
-    closesocket (sock);
-    sock = INVALID_SOCKET;
+
 }
 
 void sig_handler (int param)
