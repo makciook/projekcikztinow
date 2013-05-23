@@ -186,3 +186,18 @@ int SCoupler::sendMessage(const char* msg, int length)
 	delete [] buffer;
 	return ret;
 }
+
+DWORD WINAPI SCoupler::init (LPVOID ctx)
+{
+	// i tutaj pobraæ klucz z Cryptera
+	// wywo³aæ w pêtli waitForMessage()
+	while(true)
+	{
+		// trzeba sobie jakos skolowac wskaznik na obiekt couplera
+		if (coupler->waitForMessage() != 0)
+		{
+			break;
+		}
+	}
+	return 0;
+}
