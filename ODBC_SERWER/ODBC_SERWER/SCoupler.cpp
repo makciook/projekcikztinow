@@ -9,13 +9,39 @@ SCoupler::SCoupler()
 	int timeout = 1500;
     tv.tv_sec = (float)timeout/1000;
     tv.tv_usec = (timeout%1000)*1000;
-
-	parent->setKey("01234567890123456789012345678901");
 }
+
 
 SCoupler::~SCoupler(void)
 {
 }
+
+DWORD WINAPI SCoupler::init (LPVOID ctx)
+{
+	ClientContext *context = (ClientContext*)ctx;
+	char klucz[33] = "01234567890123456789012345678901";
+	parent->setKey("01234567890123456789012345678901");
+
+	send(context->sock, klucz, sizeof(klucz), 0);
+
+	while(true)
+	{
+		if (waitForMessage() != 0)
+		{
+			break;
+		}
+	}
+}
+
+
+void SCoupler::setKey(char* msg, int length)
+{
+	char* buffer = new char[length+1];
+	memcpy(buffer,msg,length);
+	buffer[length] = '\0';
+	parent->setKey(msg);
+}
+
 
 int SCoupler::waitForMessage()
 {
@@ -113,6 +139,7 @@ int SCoupler::waitForMessage()
 	delete [] buffer;
 	return ret;
 }
+
 
 int SCoupler::sendMessage(const char* msg, int length)
 {

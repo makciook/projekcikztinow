@@ -38,8 +38,9 @@ int DBConnector::executeQuery(string query, unsigned int id)
 	cout << "EXECUTING: "<<query<<endl;
 	try {
 
-		if (connection -> isClosed()) {
-			throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
+		if (connection == NULL || connection -> isClosed()) {
+			throw SQLException("DatabaseMetaData FAILURE - database connection closed");
+			//throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
 		}
 
 
@@ -48,7 +49,8 @@ int DBConnector::executeQuery(string query, unsigned int id)
 		rsmd = resultSet->getMetaData();
 
 		if (resultSet -> rowsCount() == 0) {
-			throw runtime_error("ResultSetMetaData FAILURE - no records in the result set");
+			throw SQLException("ResultSetMetaData FAILURE - no records in the result set");
+			//throw runtime_error("ResultSetMetaData FAILURE - no records in the result set");
 		}
 
 		result ="";
