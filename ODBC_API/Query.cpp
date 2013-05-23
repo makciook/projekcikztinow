@@ -9,6 +9,7 @@ Query::Query()
 	this->id = counter;
 	query = "";
 	valid = false;
+	curNode = NULL;
 }
 
 Query::Query(string query)
@@ -17,6 +18,7 @@ Query::Query(string query)
 	this->id = counter;
 	this->query = query;
 	valid = false;
+	curNode = NULL;
 }
 
 int Query::getInt(int col)

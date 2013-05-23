@@ -1,5 +1,6 @@
 #include "SCoupler.h"
 #include "Crypter.h"
+#include <signal.h>
 
 
 SCoupler::SCoupler()
@@ -10,11 +11,11 @@ SCoupler::SCoupler()
     tv.tv_sec = (float)timeout/1000;
     tv.tv_usec = (timeout%1000)*1000;
 
-	parent->setKey("01234567890123456789012345678901");
 }
 
 SCoupler::~SCoupler(void)
 {
+	delete this;					// suicide, zgodne ze standardem C++ 16.15
 }
 
 int SCoupler::waitForMessage()
@@ -187,17 +188,31 @@ int SCoupler::sendMessage(const char* msg, int length)
 	return ret;
 }
 
-DWORD WINAPI SCoupler::init (LPVOID ctx)
+int SCoupler::run()
 {
-	// i tutaj pobraæ klucz z Cryptera i go wys³aæ do klienta
-	// wywo³aæ w pêtli waitForMessage()
+	char klucz[32];
+	memcpy(klucz, parent->genKey(), 32);
+	if(send(sock, klucz, 32, 0) == SOCKET_ERROR)
+	{
+		raise(SIGINT);
+		return 1;
+	}
 	while(true)
 	{
-		// trzeba sobie jakos skolowac wskaznik na obiekt couplera
-		if (coupler->waitForMessage() != 0)
+		if (this->waitForMessage() != 0)
 		{
 			break;
 		}
 	}
+	cout << "Wyszlem\n";
+	raise(SIGINT);
+	return 0;
+}
+
+DWORD WINAPI SCoupler::init (LPVOID ctx)
+{
+	SCoupler *coup = new SCoupler();
+	coup->setSocket((SOCKET)ctx);
+	coup->run();
 	return 0;
 }

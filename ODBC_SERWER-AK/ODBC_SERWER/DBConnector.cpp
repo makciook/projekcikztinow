@@ -38,7 +38,7 @@ int DBConnector::executeQuery(string query, unsigned int id)
 	cout << "EXECUTING: "<<query<<endl;
 	try {
 
-		if (connection -> isClosed()) {
+		if (connection == NULL || connection -> isClosed()) {
 			throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
 		}
 

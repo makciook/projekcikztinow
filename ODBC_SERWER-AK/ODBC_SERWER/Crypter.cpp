@@ -59,4 +59,14 @@ void Crypter::disconnect(void)
 	//child->disconn();
 }
 
+char* Crypter::genKey()
+{
+	srand(time(NULL));
+	memset(klucz, 0, 32);
+	char possibilities[60] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnoprtuwxyz";
+	for(int i = 0; i < 32; ++i)
+		klucz[i] = possibilities[rand() % 59];
+	return klucz;
+}
+
 

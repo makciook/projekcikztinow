@@ -40,6 +40,8 @@ void NDBC::getConnectionState(void)
 
 bool NDBC::commit(void)
 {
+	if(!connected)
+		return false;
 	if(child->serialize(Types::DB_COMMIT, "COMMIT") != 0)
 	{
 		connected = false;
@@ -52,6 +54,8 @@ bool NDBC::commit(void)
 
 bool NDBC::rollback(void)
 {
+	if(!connected)
+		return false;
 	if(child->serialize(Types::DB_ROLLBACK, "ROLLBACK") != 0)
 	{
 		connected = false;
@@ -64,6 +68,8 @@ bool NDBC::rollback(void)
 
 bool NDBC::transaction(void)
 {
+	if(!connected)
+		return false;
 	if(child->serialize(Types::DB_TRANSACTION, "START TRANSACTION") != 0)
 	{
 		connected = false;
@@ -111,6 +117,8 @@ void NDBC::updateQuery(int id, unsigned int ack, string &msg)
 
 int NDBC::exec(Query *query)
 {
+	if(!connected)
+		return false;
 	queries.push_back(query);
 	query->resetQuery();
 	child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());

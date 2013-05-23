@@ -2,6 +2,8 @@
 #define CRYPTER_H
 
 #include "SCoupler.h"
+#include <random>
+#include <time.h>
 
 class Transporter;
 
@@ -17,7 +19,7 @@ public:
 	int decrypt(const char* msg, int length);
 	int connect(const char* addr, const char* msg, int length);
 	void disconnect(void);
-	void setKey(const char* key) { strcpy_s(klucz, key); }
+	char* genKey();
 };
 
 #endif /* CRYPTER_H */

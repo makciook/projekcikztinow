@@ -231,6 +231,7 @@ int Coupler::conn(const char* addr)
     }
 	int dataLength = recv(sock, klucz, sizeof(klucz), 0);		// odebranie klucza
 	klucz[32] = '\0';
+	cout << "Odebralem klucz: " << klucz << "\n";
 	if (dataLength == 0)										// client disconnected
     {
 		return 5;

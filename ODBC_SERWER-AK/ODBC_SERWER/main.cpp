@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
-#include <vector>
+#include <signal.h>
 #include "SCoupler.h"
  
 #define MAX_CLIENTS     20
@@ -11,16 +11,9 @@ using namespace std;
  
 class SCoupler;
 
-struct ClientContext
-{
-    HANDLE thread;
-    SOCKET sock;
-    int  id;
-};
-
 SOCKET          sock;
 
-vector<ClientContext> clients;
+int clients_num = 0;
  
 void ShutdownServer()
 {
@@ -34,37 +27,10 @@ void ShutdownServer()
     closesocket (sock);
     sock = INVALID_SOCKET;
 }
- 
-DWORD WINAPI processClient (LPVOID ctx)
+
+void sig_handler (int param)
 {
- //   ClientContext *context = (ClientContext*)ctx;
-	//SCoupler* coupler = new SCoupler();
-
-	//coupler->setSocket(context->sock);
-
-	//char klucz[33] = "01234567890123456789012345678901";
-
-	//for (int i = 0; i < 32; ++i)
-	//{
-	//	klucz[i]=rand()%9;
-	//}
-	//klucz[32] = '/0';
-	//coupler->setKey(klucz,sizeof(klucz));
-	/*send(context->sock, klucz, sizeof(klucz), 0);*/
-
-
-	//while(true)
-	//{
-	//	if (coupler->waitForMessage() != 0)
-	//	{
-	//		break;
-	//	}
-	//}
- 
-	//delete coupler;
- //   context->thread = NULL;
-	/*clients.erase(clients.begin()+context->id);*/
-    return 0;
+	--clients_num;
 }
  
 int main(void)
@@ -74,6 +40,8 @@ int main(void)
     SOCKET          client;
     int             processConnections = 5;
     int             newId;
+
+	signal(SIGINT, sig_handler);
  
     WSAStartup( MAKEWORD(2,2), &wsaData );
  
@@ -89,7 +57,7 @@ int main(void)
         return -1;
     }
  
-    if (listen(sock, MAX_CLIENTS) == SOCKET_ERROR)
+    if (listen(sock, SOMAXCONN) == SOCKET_ERROR)
     {
         cout << "Ustawienie gniazda w tryb nas³uchiwania nie powiod³o siê\n";
         closesocket (sock);
@@ -106,58 +74,26 @@ int main(void)
             {
                 cout << "WSAECONNRESET\n";
             }
-            else
-                break;
         }
         else
 		{
         
-			newId = -1;
-			if (clients.size() < MAX_CLIENTS)
+			if (clients_num > MAX_CLIENTS)
 			{
-				ClientContext cc;
-				newId = clients.size();
-				clients.push_back(cc);
-
-			}
-
-            if (newId == -1)
-            {
                 cout << "Serwer nie obsluguje wiekszej ilosci klientow jednoczesnie niz " << MAX_CLIENTS << endl;
             }
             else
             {
-				// TO MUSI BY DYNAMICZNE! BO PO WYJŒCIU Z BLOKU COUPLER ZNIKNIE!
-				SCoupler coupler;
-				coupler.setSocket(clients[newId].sock);		///
-                clients[newId].sock   = client;
-                clients[newId].id     = newId;
-                //clients[newId].thread = CreateThread (NULL, 0, processClient, (LPVOID)&clients[newId], 0, NULL);
-				clients[newId].thread = CreateThread (NULL, 0, coupler.init, (LPVOID)&clients[newId], 0, NULL);
+				++clients_num;
+				HANDLE thread = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
  
-                if (clients[newId].thread == NULL)
+                if (thread == NULL)
                 {
-                    clients[newId].sock = INVALID_SOCKET;
-                    clients[newId].id   = -1;
                     cout << "Utworzenie watku dla klienta nie powiodlo sie." << endl;
                 }
             }
         }
     }
-     
-    HANDLE threads[MAX_CLIENTS];
-    int threadsCount = 0;
-     
-    for (int i = 0; i < MAX_CLIENTS; i++)
-        if (clients[i].thread != NULL)
-        {
-            threads[threadsCount] = clients[i].thread;
-            threadsCount ++;
-        }
-         
-    if (WaitForMultipleObjects(threadsCount, threads, true, 5000) == WAIT_TIMEOUT)
-        for (int i = 0; i < MAX_CLIENTS; i ++)
-            TerminateThread (threads[i], 2);
  
     WSACleanup();
 	return 0;

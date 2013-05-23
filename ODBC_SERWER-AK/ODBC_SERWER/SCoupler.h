@@ -18,6 +18,7 @@ public:
 	SCoupler();
 	~SCoupler(void);
 	void setSocket(SOCKET socket) { sock = socket; };
+	int run();
 	int waitForMessage();
 	int sendMessage(const char* msg, int length);
 	static DWORD WINAPI init (LPVOID ctx);
