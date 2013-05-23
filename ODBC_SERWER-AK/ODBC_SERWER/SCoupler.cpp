@@ -189,7 +189,7 @@ int SCoupler::sendMessage(const char* msg, int length)
 
 DWORD WINAPI SCoupler::init (LPVOID ctx)
 {
-	// i tutaj pobraæ klucz z Cryptera
+	// i tutaj pobraæ klucz z Cryptera i go wys³aæ do klienta
 	// wywo³aæ w pêtli waitForMessage()
 	while(true)
 	{
