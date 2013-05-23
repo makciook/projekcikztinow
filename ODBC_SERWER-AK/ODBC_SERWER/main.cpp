@@ -127,7 +127,8 @@ int main(void)
             }
             else
             {
-				SCoupler coupler;							///
+				// TO MUSI BY DYNAMICZNE! BO PO WYJŒCIU Z BLOKU COUPLER ZNIKNIE!
+				SCoupler coupler;
 				coupler.setSocket(clients[newId].sock);		///
                 clients[newId].sock   = client;
                 clients[newId].id     = newId;
