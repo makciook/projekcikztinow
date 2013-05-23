@@ -18,7 +18,6 @@ Transporter::~Transporter(void)
 int Transporter::encapsulate(Types type, const char* msg, int length)
 {
 	unsigned int typ = type;
-	std::cout << "Typ(trans): " << typ << "\n";
 	typ = htonl(typ);
 
 	char *buffer = new char[length + sizeof(typ)];
@@ -37,7 +36,6 @@ int Transporter::decapsulate(const char* msg, int length)
 	typ = ntohl(typ);
 	int size = length-sizeof(typ);
 	int ret;
-	std::cout << "Dostalem typ: " << typ << "\n";
 	if(typ == Types::DB_EXEC)
 		ret = parent->executionReply(msg+sizeof(typ));
 	else
@@ -63,7 +61,6 @@ int Transporter::decapsulate(const char* msg, int length)
 int Transporter::connect(const char* addr, const char* msg, int length)
 {
 	unsigned int typ = Types::DB_CONNECT;
-	std::cout << "Typ(Trans): " << typ << "\n";
 	typ = htonl(typ);
 	char *buffer = new char[length + sizeof(typ)];
 	memcpy(buffer, &typ, sizeof(typ));

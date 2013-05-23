@@ -41,7 +41,7 @@ int main(void)
     memset( (void*)&saddr, 0, sizeof(saddr) );
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(27017);
-    saddr.sin_addr.s_addr =inet_addr( "127.0.0.1" );
+    saddr.sin_addr.s_addr =inet_addr( "0.0.0.0" );
  
     if ( bind(sock, (sockaddr*)&saddr, sizeof(saddr)) == SOCKET_ERROR )
     {

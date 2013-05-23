@@ -28,6 +28,7 @@ public:
 	~DBConnector(void);
 	int connect(string host, string user, string password, string db);
 	int executeQuery(string query, unsigned int id);
+	int executeStatement(string query, unsigned int type);
 	string getResult() { return result; }
 };
 

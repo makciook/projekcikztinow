@@ -39,7 +39,8 @@ int DBConnector::executeQuery(string query, unsigned int id)
 	try {
 
 		if (connection == NULL || connection -> isClosed()) {
-			throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
+			throw SQLException("DatabaseMetaData FAILURE - database connection closed");
+			//throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
 		}
 
 
@@ -48,7 +49,8 @@ int DBConnector::executeQuery(string query, unsigned int id)
 		rsmd = resultSet->getMetaData();
 
 		if (resultSet -> rowsCount() == 0) {
-			throw runtime_error("ResultSetMetaData FAILURE - no records in the result set");
+			throw SQLException("ResultSetMetaData FAILURE - no records in the result set");
+			//throw runtime_error("ResultSetMetaData FAILURE - no records in the result set");
 		}
 
 		result ="";
@@ -94,6 +96,32 @@ int DBConnector::executeQuery(string query, unsigned int id)
 	{
 		result = e.what();
 		child->encapsulate(Types::DB_EXEC,1,result.c_str(),result.length(), id);
+		return 1;
+	}
+}
+
+int DBConnector::executeStatement(string query, unsigned int type)
+{
+	int cols;
+
+	cout << "EXECUTING STATEMENT: "<<query<<endl;
+	try {
+
+		if (connection == NULL || connection -> isClosed()) {
+			throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
+		}
+
+
+		statement = connection->createStatement();
+		statement->executeQuery (query);
+
+		child->encapsulate((Types)type,0,result.c_str(),result.length());
+		return 0;
+
+	} catch (SQLException &e)
+	{
+		result = e.what();
+		child->encapsulate((Types)type,1,result.c_str(),result.length());
 		return 1;
 	}
 }

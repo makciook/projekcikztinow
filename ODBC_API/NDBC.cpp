@@ -119,6 +119,8 @@ int NDBC::exec(Query *query)
 {
 	if(!connected)
 		return false;
+	if(query == NULL)
+		return false;
 	queries.push_back(query);
 	query->resetQuery();
 	child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());

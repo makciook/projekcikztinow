@@ -209,10 +209,12 @@ int Coupler::conn(const char* addr)
 	SockAddr.sin_port = htons( 27017 );
 	SockAddr.sin_family = AF_INET;
 	SockAddr.sin_addr.S_un.S_addr = inet_addr(addr);
+	unsigned long opt = 0;
+	ioctlsocket(sock, FIONBIO, &opt);
 	std::cout << "Adres: \"" << addr << "\"\n";
 	if(connect(sock, (SOCKADDR *)(&SockAddr), sizeof(SockAddr)) == SOCKET_ERROR) 
-		return 2;
-	unsigned long opt = 1;
+		return WSAGetLastError();
+	opt = 1;
 	ioctlsocket(sock, FIONBIO, &opt);								// set socket to nonblocking
 	char klucz[33];
 	fd_set fd;

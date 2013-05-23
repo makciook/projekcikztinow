@@ -43,7 +43,6 @@ int Crypter::decrypt(const char* msg, int length)
 		buffer[i] = c;
 	}
 	buffer[length] = '\0';
-	std::cout << string(buffer, length) << "\n";
 	int ret = parent->decapsulate(buffer, length);
 	return ret;
 }

@@ -8,10 +8,9 @@ using namespace std;
 int main()
 {
 	NDBC test;
-	test.connect("User", "password", "kupajasia", "89.73.249.9");
-	cout << "asdasd";
+	test.connect("root", "", "etykiety", "127.0.0.1");
 	Query q;
-	q.prepareQuery("SELECT * FROM klient LIMIT 10");
+	q.prepareQuery("SELECT * FROM szpulka LIMIT 10");
 	test.exec(&q);
 	cout << q.getString(1);
 	q.next();

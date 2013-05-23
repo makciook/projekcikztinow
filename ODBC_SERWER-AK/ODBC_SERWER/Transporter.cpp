@@ -61,11 +61,7 @@ int Transporter::decapsulate(const char* msg, int length)
 		string pass = strtok(NULL,";");
 		string db = strtok(NULL,";");
 		string address = "tcp://127.0.0.1:3306";
-
-		/*int ret = */parent->connect(address,user,pass,db);
-
-		//string result = parent->getResult();
-		//encapsulate((Types)typ,ret,result.c_str(),result.length());
+		parent->connect(address,user,pass,db);
 	}
 	else if (Types::DB_EXEC)
 	{
@@ -74,9 +70,12 @@ int Transporter::decapsulate(const char* msg, int length)
 		memcpy(&id, msg+sizeof(typ), sizeof(id));
 		id = ntohl(id);
 		cout << "Odpowiadam na id: " << id << "\n";
-		/*int ack = */parent->executeQuery(msg+sizeof(typ)+sizeof(id),id);
-		//string result = parent->getResult();
-		//encapsulate((Types)typ,ack,result.c_str(),result.length(), id);
+		parent->executeQuery(msg+sizeof(typ)+sizeof(id),id);
+	}
+	else 
+	{
+		std::cout<<"Inny typ"<<endl;
+		parent->executeStatement(msg+sizeof(typ),typ);
 	}
 	return 4;
 }
