@@ -1,6 +1,5 @@
 #include "SCoupler.h"
 #include "Crypter.h"
-#include <signal.h>
 
 
 SCoupler::SCoupler()
@@ -208,7 +207,6 @@ int SCoupler::run()
 		}
 	}
 	cout << "Wyszlem\n";
-	raise(SIGINT);
 	return 0;
 }
 

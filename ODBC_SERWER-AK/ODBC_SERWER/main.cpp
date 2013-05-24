@@ -2,7 +2,6 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
-#include <signal.h>
 #include "SCoupler.h"
  
 #define MAX_CLIENTS     20
@@ -13,16 +12,15 @@ class SCoupler;
 
 SOCKET          sock;
 
-int clients_num = 0;
+struct temp
+{
+	SOCKET sock;
+	int *num;
+};
  
 void ShutdownServer()
 {
 
-}
-
-void sig_handler (int param)
-{
-	--clients_num;
 }
  
 int main(void)
@@ -32,8 +30,8 @@ int main(void)
     SOCKET          client;
     int             processConnections = 5;
     int             newId;
+	HANDLE			threads[MAX_CLIENTS];
 
-	signal(SIGINT, sig_handler);
  
     WSAStartup( MAKEWORD(2,2), &wsaData );
  
@@ -42,6 +40,9 @@ int main(void)
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(27017);
     saddr.sin_addr.s_addr =inet_addr( "0.0.0.0" );
+
+	for(int i = 0; i < MAX_CLIENTS; ++i)
+		threads[i] = NULL;
  
     if ( bind(sock, (sockaddr*)&saddr, sizeof(saddr)) == SOCKET_ERROR )
     {
@@ -69,23 +70,39 @@ int main(void)
         }
         else
 		{
-        
-			if (clients_num > MAX_CLIENTS)
+			newId = -1;
+			for(int i = 0; i < MAX_CLIENTS; ++i)
 			{
-                cout << "Serwer nie obsluguje wiekszej ilosci klientow jednoczesnie niz " << MAX_CLIENTS << endl;
+				if(threads[i] == NULL)
+				{
+					newId = i;
+					break;
+				}
+				DWORD result = WaitForSingleObject( threads[i], 0);
+
+				if (result == WAIT_OBJECT_0) {
+					newId = i;
+					break;
+				}
+			}
+			if (newId == -1)
+			{
+                cout << "Serwer jest pelen!\n";
             }
             else
             {
-				++clients_num;
-				HANDLE thread = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
+				cout << "Przydzielilem " << newId << "\n";
+				threads[newId] = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
  
-                if (thread == NULL)
+                if (threads[newId] == NULL)
                 {
                     cout << "Utworzenie watku dla klienta nie powiodlo sie." << endl;
                 }
             }
         }
     }
+	cout << "Wyszlo\n";
+	cin.get();
  
     WSACleanup();
 	return 0;
