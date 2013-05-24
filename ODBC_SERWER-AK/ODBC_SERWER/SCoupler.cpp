@@ -39,7 +39,7 @@ int SCoupler::waitForMessage()
 		if (nError == SOCKET_ERROR)									// winsock error
 		{
 			cout << "Error: " << nError << "\n";
-			return 2;
+			return nError;
 		}
 		int dataLength = recv(sock, (char*)&size, sizeof(size), 0);
 		if (dataLength == 0)										// client disconnected
@@ -51,7 +51,7 @@ int SCoupler::waitForMessage()
 		if (nError != 0)								// winsock error
 		{
 			cout << "nError: " << nError << "\n";
-			return 4;
+			return nError;
 		}
 		size = ntohl(size);
 		//cout << "Odebrano size: " << size << "\n";
@@ -68,7 +68,7 @@ int SCoupler::waitForMessage()
 		if (nError != 0)								// winsock error
 		{
 			cout << "nError 3: " << nError << "\n";
-			return 4;
+			return nError;
 		}
 		buffer = new char[size+1];
 		dataLength = recv(sock, buffer, size, 0);
@@ -85,7 +85,7 @@ int SCoupler::waitForMessage()
 		if (nError != 0)								// winsock error
 		{
 			cout << "nError 4: " << nError << "\n";
-			return 4;
+			return nError;
 		}
 		buffer[size] = '\0';
 		string buf(buffer, size);
@@ -197,9 +197,12 @@ int SCoupler::run()
 		raise(SIGINT);
 		return 1;
 	}
+	int ret;
 	while(true)
 	{
-		if (this->waitForMessage() != 0)
+		ret = this->waitForMessage();
+		if ( ret == 0 || ret == WSAECONNRESET || ret == WSAENETDOWN || ret == WSAENETRESET || ret == WSAECONNABORTED
+				|| ret == WSAESHUTDOWN || ret == WSAETIMEDOUT || ret == WSAECONNREFUSED || ret == WSAEHOSTDOWN)
 		{
 			break;
 		}
