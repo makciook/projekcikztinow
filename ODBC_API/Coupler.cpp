@@ -37,45 +37,25 @@ int Coupler::sendAndWait(const char* msg, int length)
 	memcpy(buffer+sizeof(size), checkSum.c_str(), checkSum.length());
 	memcpy(buffer+sizeof(size)+checkSum.length(), msg, length);
 	bool resend = true;
-	char response[10];
+	char response[2];
 	int counter = 0;
-	fd_set fd;
 	while(resend)
 	{
 		/*std::cout << "Wysylam: (len = " << bufSize;
 		for(int i = 0; i < bufSize; ++i)
 			std::cout << buffer[i];
 		std::cout << "\n";*/
-		if(send(sock, buffer, bufSize, 0) == SOCKET_ERROR)
+		if(write(buffer, bufSize) != 0)
 			return 1;
-		FD_ZERO(&fd);
-		FD_SET(sock, &fd);
 		std::cout << "Czekam na odpowiedz\n";
-		int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
-		if (nError == 0)											// timeout
-		{
-			return 1;
-		}
-
-		if (nError == SOCKET_ERROR)									// winsock error
-		{
+		if(!read(response, 1))
 			return 2;
-		}
-		int dataLength = recv(sock, response, sizeof(response), 0);
-		if (dataLength == 0)										// client disconnected
-		{
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			return 4;
-		}
+		response[1] = '\0';
 		/*std::cout << "Odebrano odpowiedz: \"";
 		for(int i = 0; i < 10; ++i)
 			cout << response[i];
 		cout << "\"\n";*/
-		if(strcmp(response, "Ok") == 0)
+		if(strcmp(response, "0") == 0)
 			resend = false;
 		else
 		{
@@ -134,6 +114,21 @@ bool Coupler::read(char *buf, int size)
 	return true;
 }
 
+int Coupler::write(char *buf, int size)
+{
+	fd_set fd;
+    FD_ZERO(&fd);
+    FD_SET(sock, &fd);
+	int nError = select(0, NULL, &fd, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
+	if (nError == 0)											// timeout
+		return -2;
+	else if(nError == -1)										// winsock error
+		return -1;
+	if(send(sock, buf, size, 0) == SOCKET_ERROR)
+		return -1;
+	return 0;
+}
+
 
 int Coupler::waitForMessage(void)
 {
@@ -163,17 +158,20 @@ int Coupler::waitForMessage(void)
 			++counter;
 			if(counter > 2)
 			{
-				send(sock, "Stop\0", 5, 0);
+				if(write("2", 1) != 0)
+					return 2;
 				cout << "Stopped send!\n";
 				return 5;
 			}
-			send(sock, "Error\0", 6, 0); 
+			if(write("1", 1) != 0)
+				return 2;
 			cout << "Error send\n";
 			resend = true;
 		}
 		else
 		{
-			send(sock, "Ok\0", 3, 0); 
+			if(write("0", 1) != 0)
+				return 2;
 			cout << "Ok send\n";
 			resend = false;
 		}

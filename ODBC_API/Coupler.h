@@ -22,6 +22,7 @@ public:
 	int waitForMessage(void);
 	int readBytes(char* buf, int size);
 	bool read(char* buf, int size);
+	int write(char* buf, int size);
 	int conn(const char* addr);
 	void disconn();
 };
