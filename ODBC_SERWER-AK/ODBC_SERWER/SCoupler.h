@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Server.h" //////////////;
 #include <WinSock2.h>
 #include <Windows.h>
 #include <string>
@@ -14,6 +15,9 @@ class SCoupler
 	Crypter* parent;
 	SOCKET sock;
 	timeval tv;
+	bool read(char* buf, int size);
+	int readBytes(char* buf, int size);
+	int write(char *buf, int size);
 public:
 	SCoupler();
 	~SCoupler(void);

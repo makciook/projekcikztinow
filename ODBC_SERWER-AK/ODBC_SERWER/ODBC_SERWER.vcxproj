@@ -69,6 +69,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Md5.cpp" />
     <ClCompile Include="SCoupler.cpp" />
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="Transporter.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +78,7 @@
     <ClInclude Include="Md5.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SCoupler.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="Transporter.h" />
   </ItemGroup>
   <ItemGroup>

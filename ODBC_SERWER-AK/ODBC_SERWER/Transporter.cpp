@@ -16,6 +16,9 @@ Transporter::~Transporter(void)
 
 int Transporter::encapsulate(Types type, unsigned int ack, const char* msg, int length, unsigned int id)
 {
+	if (msg == NULL || length < 0)
+		return 1;
+
 	unsigned int typ = type;
 	typ = htonl(typ);
 	unsigned int ackn = htonl(ack);
@@ -40,6 +43,9 @@ int Transporter::encapsulate(Types type, unsigned int ack, const char* msg, int 
 
 int Transporter::decapsulate(const char* msg, int length)
 {
+	if (msg == NULL || length < 0)
+		return 1;
+
 	unsigned int typ;
 	memcpy(&typ, msg, sizeof(typ));
 	typ = ntohl(typ);
@@ -102,6 +108,9 @@ int Transporter::decapsulate(const char* msg, int length)
 
 int Transporter::connect(const char* addr, const char* msg, int length)
 {
+	if (addr == NULL || msg == NULL || length <= 0)
+		return 1;
+
 	unsigned int typ = Types::DB_CONNECT;
 	typ = htonl(typ);
 	char *buffer = new char[length + sizeof(typ)+1];

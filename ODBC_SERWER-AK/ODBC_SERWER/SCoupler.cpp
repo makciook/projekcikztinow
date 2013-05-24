@@ -14,78 +14,30 @@ SCoupler::SCoupler()
 
 SCoupler::~SCoupler(void)
 {
+	closesocket(sock);
 	delete this;					// suicide, zgodne ze standardem C++ 16.15
 }
 
 int SCoupler::waitForMessage()
 {
-	fd_set fd;
-    FD_ZERO(&fd);
-    FD_SET(sock, &fd);
 	bool resend = true;
 	char *buffer;
 	unsigned int size;
 	int counter = 0;
 	while(resend)
 	{
-		int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
-		if (nError == 0)											// timeout
-		{
-			cout << "Timeout\n";
+		if(!read((char*)&size, sizeof(size)))
 			return 1;
-		}
-
-		if (nError == SOCKET_ERROR)									// winsock error
-		{
-			cout << "Error: " << nError << "\n";
-			return nError;
-		}
-		int dataLength = recv(sock, (char*)&size, sizeof(size), 0);
-		if (dataLength == 0)										// client disconnected
-		{
-			cout << "Empty datalength\n";
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			cout << "nError: " << nError << "\n";
-			return nError;
-		}
 		size = ntohl(size);
-		//cout << "Odebrano size: " << size << "\n";
+		cout << "Odebrano size: " << size << "\n";
 		char checksum[33];
-		dataLength = recv(sock, checksum, 32, 0);
+		if(!read(checksum, 32))
+			return 1;
 		checksum[32] = '\0';
-		//cout << "Odebrano suma: \"" << checksum << "\"\n";
-		if (dataLength == 0)										// client disconnected
-		{
-			cout << "Empty datalength 2\n";
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			cout << "nError 3: " << nError << "\n";
-			return nError;
-		}
+		cout << "Odebrano suma: \"" << checksum << "\"\n";
 		buffer = new char[size+1];
-		dataLength = recv(sock, buffer, size, 0);
-		//cout << "Odebrano buf: \"";
-		//for(int i = 0; i < size; ++i)
-		//	cout << buffer[i];
-		//cout << "\"\n";
-		if (dataLength == 0)										// client disconnected
-		{
-			cout << "Empty datalength 3\n";
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			cout << "nError 4: " << nError << "\n";
-			return nError;
-		}
+		if(!read(buffer, size))
+			return 1;
 		buffer[size] = '\0';
 		string buf(buffer, size);
 		string checkSum(checksum);
@@ -94,17 +46,20 @@ int SCoupler::waitForMessage()
 			++counter;
 			if(counter > 2)
 			{
-				send(sock, "Stop\0", 5, 0);
+				if(write("2", 1) != 0)
+					return 2;
 				cout << "Stopped send!\n";
 				return 5;
 			}
-			send(sock, "Error\0", 6, 0); 
+			if(write("1", 1) != 0)
+				return 2;
 			cout << "Error send\n";
 			resend = true;
 		}
 		else
 		{
-			send(sock, "Ok\0", 3, 0); 
+			if(write("0", 1) != 0)
+				return 2;
 			cout << "Ok send\n";
 			resend = false;
 		}
@@ -116,61 +71,36 @@ int SCoupler::waitForMessage()
 
 int SCoupler::sendMessage(const char* msg, int length)
 {
+	if(msg == NULL || length < 0)
+		return 1;
 	string checkSum;
 	int size = length;
 	checkSum = md5(string(msg, length));
 	int bufSize = size+checkSum.length()+sizeof(size);
 	char *buffer = new char[bufSize];
-	//cout << "Wysylam size: " << size << "\n";
-	//cout << "wysylam suma: \"" << checkSum << "\"\n";
-	//cout << "Wysylam msg: \"";
-	//for(int i = 0; i < length; ++i)
-	//	cout << msg[i];
-	//cout << "\"\n";
+	cout << "Wysylam size: " << size << "\n";
+	cout << "wysylam suma: \"" << checkSum << "\"\n";
+	cout << "Wysylam msg: \"";
+	for(int i = 0; i < length; ++i)
+		cout << msg[i];
+	cout << "\"\n";
 	size = htonl(size);
 	memcpy(buffer, &size, sizeof(size));
 	memcpy(buffer+sizeof(size), checkSum.c_str(), checkSum.length());
 	memcpy(buffer+sizeof(size)+checkSum.length(), msg, length);
 	bool resend = true;
-	char response[10];
+	char response[2];
 	int counter = 0;
-	fd_set fd;
 	while(resend)
 	{
-		/*std::cout << "Wysylam: (len = " << bufSize;
-		for(int i = 0; i < bufSize; ++i)
-			std::cout << buffer[i];
-		std::cout << "\n";*/
-		if(send(sock, buffer, bufSize, 0) == SOCKET_ERROR)
+		if(write(buffer, bufSize) != 0)
 			return 1;
-		FD_ZERO(&fd);
-		FD_SET(sock, &fd);
 		std::cout << "Czekam na odpowiedz\n";
-		int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
-		if (nError == 0)											// timeout
-		{
-			return 1;
-		}
-
-		if (nError == SOCKET_ERROR)									// winsock error
-		{
+		if(!read(response, 1))
 			return 2;
-		}
-		int dataLength = recv(sock, response, sizeof(response), 0);
-		if (dataLength == 0)										// client disconnected
-		{
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			return 4;
-		}
-		//std::cout << "Odebrano odpowiedz: \"";
-		//for(int i = 0; i < 10; ++i)
-		//	cout << response[i];
-		//cout << "\"\n";
-		if(strcmp(response, "Ok") == 0)
+		response[1] = '\0';
+
+		if(strcmp(response, "0") == 0)
 			resend = false;
 		else
 		{
@@ -193,7 +123,6 @@ int SCoupler::run()
 	memcpy(klucz, parent->genKey(), 32);
 	if(send(sock, klucz, 32, 0) == SOCKET_ERROR)
 	{
-		raise(SIGINT);
 		return 1;
 	}
 	int ret;
@@ -215,5 +144,69 @@ DWORD WINAPI SCoupler::init (LPVOID ctx)
 	SCoupler *coup = new SCoupler();
 	coup->setSocket((SOCKET)ctx);
 	coup->run();
+	return 0;
+}
+
+int SCoupler::readBytes(char* buf, int size)
+{
+	if(buf == NULL || size < 0)
+		return 1;
+
+	fd_set fd;
+    FD_ZERO(&fd);
+    FD_SET(sock, &fd);
+	int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
+	if (nError == 0)											// timeout
+		return -2;
+	else if(nError == -1)										// winsock error
+		return -1;
+	int dataLength = recv(sock, buf, size, 0);
+	if(dataLength >= 0)
+		return dataLength;
+	else														// winsock error
+		return -1;
+}
+
+bool SCoupler::read(char *buf, int size)
+{
+	if(buf == NULL || size < 0)
+		return 1;
+	int need = size;
+	int received = 0;
+	int s_counter = 0;
+	while(need>0)
+	{
+		int ret = readBytes(buf+received, need);
+		if(ret > 0)												// poprawnie odebrano
+		{
+			received += ret;
+			need -= ret;
+		}
+		else if(ret == 0)										// timeout
+		{
+			++s_counter;
+			if(s_counter > 3)
+				return false;
+		}
+		else
+			return false;
+	}
+	return true;
+}
+
+int SCoupler::write(char *buf, int size)
+{
+	if(buf == NULL || size < 0)
+		return 1;
+	fd_set fd;
+    FD_ZERO(&fd);
+    FD_SET(sock, &fd);
+	int nError = select(0, NULL, &fd, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
+	if (nError == 0)											// timeout
+		return -2;
+	else if(nError == -1)										// winsock error
+		return -1;
+	if(send(sock, buf, size, 0) == SOCKET_ERROR)
+		return -1;
 	return 0;
 }

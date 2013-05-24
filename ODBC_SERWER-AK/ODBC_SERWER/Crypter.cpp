@@ -19,6 +19,9 @@ Crypter::~Crypter(void)
 
 int Crypter::encrypt(const char* msg, int length)
 {
+	if (msg == NULL || length < 0)
+			return 1;
+
 	char* buffer = new char[length+1];
 	char c;
 	for(int i = 0; i < length; ++i)
@@ -35,6 +38,9 @@ int Crypter::encrypt(const char* msg, int length)
 
 int Crypter::decrypt(const char* msg, int length)
 {
+	if (msg == NULL || length < 0)
+		return 1;
+
 	char* buffer = new char[length+1];
 	char c;
 	for(int i = 0; i < length; ++i)
@@ -56,7 +62,7 @@ int Crypter::connect(const char* addr, const char* msg, int length)
 
 void Crypter::disconnect(void)
 {
-	//child->disconn();
+	//child->disconnect();
 }
 
 char* Crypter::genKey()
