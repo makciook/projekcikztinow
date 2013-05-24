@@ -26,7 +26,7 @@ public:
 	bool rollback(void);
 	bool transaction(void);
 	string getLastError(void);
-	int exec(Query *query);
+	bool exec(Query *query);
 
 private:
 	void setLastError(const string &error) { this->error = error; }

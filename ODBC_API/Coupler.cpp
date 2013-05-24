@@ -92,77 +92,69 @@ int Coupler::sendAndWait(const char* msg, int length)
 	return ret;
 }
 
-int Coupler::sendAndLeave(void)
+int Coupler::readBytes(char* buf, int size)
 {
-	return 0;
+	fd_set fd;
+    FD_ZERO(&fd);
+    FD_SET(sock, &fd);
+	int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
+	if (nError == 0)											// timeout
+		return -2;
+	else if(nError == -1)										// winsock error
+		return -1;
+	int dataLength = recv(sock, buf, size, 0);
+	if(dataLength >= 0)
+		return dataLength;
+	else														// winsock error
+		return -1;
+}
+
+bool Coupler::read(char *buf, int size)
+{
+	int need = size;
+	int received = 0;
+	int s_counter = 0;
+	while(need>0)
+	{
+		int ret = readBytes(buf+received, need);
+		if(ret > 0)												// poprawnie odebrano
+		{
+			received += ret;
+			need -= ret;
+		}
+		else if(ret == 0)										// timeout
+		{
+			++s_counter;
+			if(s_counter > 3)
+				return false;
+		}
+		else
+			return false;
+	}
+	return true;
 }
 
 
 int Coupler::waitForMessage(void)
 {
-	fd_set fd;
-    FD_ZERO(&fd);
-    FD_SET(sock, &fd);
 	bool resend = true;
 	char *buffer;
 	unsigned int size;
 	int counter = 0;
 	while(resend)
 	{
-		int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
-		if (nError == 0)											// timeout
-		{
-			cout << "Timeout\n";
+		if(!read((char*)&size, sizeof(size)))
 			return 1;
-		}
-
-		if (nError == SOCKET_ERROR)									// winsock error
-		{
-			cout << "Error: " << nError << "\n";
-			return 2;
-		}
-		int dataLength = recv(sock, (char*)&size, sizeof(size), 0);
-		if (dataLength == 0)										// client disconnected
-		{
-			cout << "Empty datalength\n";
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			cout << "nError: " << nError << "\n";
-			return 4;
-		}
 		size = ntohl(size);
 		cout << "Odebrano size: " << size << "\n";
 		char checksum[33];
-		dataLength = recv(sock, checksum, 32, 0);
+		if(!read(checksum, 32))
+			return 1;
 		checksum[32] = '\0';
 		cout << "Odebrano suma: \"" << checksum << "\"\n";
-		if (dataLength == 0)										// client disconnected
-		{
-			cout << "Empty datalength 2\n";
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			cout << "nError 3: " << nError << "\n";
-			return 4;
-		}
 		buffer = new char[size+1];
-		dataLength = recv(sock, buffer, size, 0);
-		if (dataLength == 0)										// client disconnected
-		{
-			cout << "Empty datalength 3\n";
-			return 3;
-		}
-		nError = WSAGetLastError(); 
-		if (nError != 0)								// winsock error
-		{
-			cout << "nError 4: " << nError << "\n";
-			return 4;
-		}
+		if(!read(buffer, size))
+			return 1;
 		buffer[size] = '\0';
 		string buf(buffer, size);
 		string checkSum(checksum);
@@ -217,28 +209,9 @@ int Coupler::conn(const char* addr)
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
 	std::cout << "Polaczono. Czekam na dane ...\n";
-    int nError = select(0, &fd, NULL, NULL, &tv);				// czekamy a¿ bêdzie mo¿na coœ odczytaæ z socketa
-    if (nError == 0)											// timeout
-    {
-		return 3;
-    }
-
-    if (nError == SOCKET_ERROR)									// winsock error
-    {
-		return 4;
-    }
-	int dataLength = recv(sock, klucz, sizeof(klucz), 0);		// odebranie klucza
+    if(!read(klucz, 32))
+		return 1;
 	klucz[32] = '\0';
-	cout << "Odebralem klucz: " << klucz << "\n";
-	if (dataLength == 0)										// client disconnected
-    {
-		return 5;
-    }
-	nError = WSAGetLastError();
-	if (nError != 0)											// winsock error
-    {
-		return 6;
-    }
 	parent->setKey(klucz);
 	std::cout << "Ustawinono klucz " << klucz << "\n";
 	return 0;

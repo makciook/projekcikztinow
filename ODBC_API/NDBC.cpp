@@ -1,6 +1,7 @@
 #include "NDBC.h"
 #include "Query.h"
 
+#include <iostream>
 
 NDBC::NDBC(void)
 {
@@ -115,7 +116,7 @@ void NDBC::updateQuery(int id, unsigned int ack, string &msg)
 	}
 }
 
-int NDBC::exec(Query *query)
+bool NDBC::exec(Query *query)
 {
 	if(!connected)
 		return false;
@@ -123,6 +124,12 @@ int NDBC::exec(Query *query)
 		return false;
 	queries.push_back(query);
 	query->resetQuery();
-	child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());
-	return 0;
+	int ret = child->serialize(Types::DB_EXEC, query->getQuery(), query->getId());
+	if(ret != 0)
+	{
+		disconnect();
+		connected = false;
+		return false;
+	}
+	return true;
 }
