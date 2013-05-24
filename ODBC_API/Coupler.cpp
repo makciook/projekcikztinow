@@ -21,6 +21,8 @@ Coupler::~Coupler(void)
 
 int Coupler::sendAndWait(const char* msg, int length)
 {
+	if(msg == NULL || length < 0)
+		return 1;
 	string checkSum;
 	int size = length;
 	checkSum = md5(string(msg, length));
@@ -74,6 +76,8 @@ int Coupler::sendAndWait(const char* msg, int length)
 
 int Coupler::readBytes(char* buf, int size)
 {
+	if(buf == NULL || size < 0)
+		return 1;
 	fd_set fd;
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
@@ -91,6 +95,8 @@ int Coupler::readBytes(char* buf, int size)
 
 bool Coupler::read(char *buf, int size)
 {
+	if(buf == NULL || size < 0)
+		return 1;
 	int need = size;
 	int received = 0;
 	int s_counter = 0;
@@ -116,6 +122,8 @@ bool Coupler::read(char *buf, int size)
 
 int Coupler::write(char *buf, int size)
 {
+	if(buf == NULL || size < 0)
+		return 1;
 	fd_set fd;
     FD_ZERO(&fd);
     FD_SET(sock, &fd);
@@ -184,6 +192,8 @@ int Coupler::waitForMessage(void)
 
 int Coupler::conn(const char* addr)
 {
+	if(addr == NULL)
+		return 1;
 	WSADATA WsaDat;
     
 	if(WSAStartup(MAKEWORD(2,2),&WsaDat) != 0)

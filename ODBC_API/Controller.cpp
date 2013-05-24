@@ -17,6 +17,8 @@ Controller::~Controller(void)
 
 int Controller::executionReply(const char* msg)
 {
+	if(msg == NULL)
+		return 1;
 	unsigned int ack;
 	memcpy(&ack, msg, sizeof(ack));
 	ack = ntohl(ack);
@@ -31,6 +33,8 @@ int Controller::executionReply(const char* msg)
 
 int Controller::systemReply(const char* msg)
 {
+	if(msg == NULL)
+		return 1;
 	unsigned int ack;
 	memcpy(&ack, msg, sizeof(ack));
 	ack = ntohl(ack);
