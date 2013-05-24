@@ -17,7 +17,7 @@ class Transporter
 public:
 	Transporter(Crypter* child);
 	~Transporter(void);
-	int encapsulate(Types type, int ack, const char* msg, int length, int id = 0);
+	int encapsulate(Types type, unsigned int ack, const char* msg, int length, unsigned int id = 0);
 	int decapsulate(const char* msg, int length);
 	int connect(const char* addr, const char* msg, int length);
 	void disconnect(void);

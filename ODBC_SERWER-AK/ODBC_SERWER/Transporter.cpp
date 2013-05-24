@@ -14,7 +14,7 @@ Transporter::~Transporter(void)
 }
 
 
-int Transporter::encapsulate(Types type, int ack, const char* msg, int length, int id)
+int Transporter::encapsulate(Types type, unsigned int ack, const char* msg, int length, unsigned int id)
 {
 	unsigned int typ = type;
 	typ = htonl(typ);
@@ -57,25 +57,44 @@ int Transporter::decapsulate(const char* msg, int length)
 		memcpy(str,msg+sizeof(typ),size);
 		str[size] ='\0';
 
-		string user = strtok (str,";");
-		string pass = strtok(NULL,";");
-		string db = strtok(NULL,";");
+		string user = "";
+		int i = 0;
+		while(str[i] != ';')
+		{
+			user.push_back(str[i]);
+			++i;
+		}
+		++i;
+		string pass = "";
+		while(str[i] != ';')
+		{
+			pass.push_back(str[i]);
+			++i;
+		}
+		++i;
+		string db = "";
+		while(str[i] != '\0')
+		{
+			db.push_back(str[i]);
+			++i;
+		}
+		++i;
 		string address = "tcp://127.0.0.1:3306";
 		parent->connect(address,user,pass,db);
 	}
-	else if (Types::DB_EXEC)
+	else if (typ == Types::DB_EXEC)
 	{
 		std::cout << "Zapytanie: " << msg+sizeof(typ) << "\n";
 		unsigned int id;
 		memcpy(&id, msg+sizeof(typ), sizeof(id));
 		id = ntohl(id);
 		cout << "Odpowiadam na id: " << id << "\n";
-		parent->executeQuery(msg+sizeof(typ)+sizeof(id),id);
+		parent->executeQuery(msg+sizeof(typ)+sizeof(id),(Types)typ,id);
 	}
 	else 
 	{
 		std::cout<<"Inny typ"<<endl;
-		parent->executeStatement(msg+sizeof(typ),typ);
+		parent->executeQuery(msg+sizeof(typ),(Types)typ, 0);
 	}
 	return 4;
 }

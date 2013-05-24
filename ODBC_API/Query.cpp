@@ -92,7 +92,6 @@ void Query::setResult(const string &result)
 	curNode = doc.first_node("row");
 	if(curNode == NULL)
 	{
-		cout << "Nie ma node!\n";
 		return;
 	}
 }

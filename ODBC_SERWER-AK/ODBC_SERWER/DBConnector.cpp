@@ -31,7 +31,7 @@ int DBConnector::connect(string host, string user, string password, string db)
 	return 0;
 }
 
-int DBConnector::executeQuery(string query, unsigned int id)
+int DBConnector::executeQuery(string query, unsigned int type, unsigned int id)
 {
 	int cols;
 
@@ -47,13 +47,16 @@ int DBConnector::executeQuery(string query, unsigned int id)
 		statement = connection->createStatement();
 		resultSet = statement->executeQuery (query);
 		rsmd = resultSet->getMetaData();
+		result ="";
 
-		if (resultSet -> rowsCount() == 0) {
-			throw SQLException("ResultSetMetaData FAILURE - no records in the result set");
-			//throw runtime_error("ResultSetMetaData FAILURE - no records in the result set");
+		if (resultSet -> rowsCount() == 0) 
+		{
+			result = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
+			child->encapsulate((Types)type,0,result.c_str(),result.length(), id);
+			return 0;
 		}
 
-		result ="";
+		
 		result += "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
 		result +='\n';
 		result += "<row type=\"header\">";
@@ -73,55 +76,28 @@ int DBConnector::executeQuery(string query, unsigned int id)
 		result += "</row>";
 		result +='\n';
 
-			while (resultSet->next())
+		while (resultSet->next())
+		{
+			result += "<row>";
+			result +='\n';
+			for (int i = 1; i < cols+1; i++)
 			{
-				result += "<row>";
+				result+="<col>";
+				result+=resultSet->getString(i);
+				result+="</col>";
 				result +='\n';
-				for (int i = 1; i < cols+1; i++)
-				{
-					result+="<col>";
-					result+=resultSet->getString(i);
-					result+="</col>";
-					result +='\n';
-				}
-								result += "</row>";
-								result +='\n';
 			}
-
-
-			child->encapsulate(Types::DB_EXEC,0,result.c_str(),result.length(), id);
-			return 0;
-
-	} catch (SQLException &e)
-	{
-		result = e.what();
-		child->encapsulate(Types::DB_EXEC,1,result.c_str(),result.length(), id);
-		return 1;
-	}
-}
-
-int DBConnector::executeStatement(string query, unsigned int type)
-{
-	int cols;
-
-	cout << "EXECUTING STATEMENT: "<<query<<endl;
-	try {
-
-		if (connection == NULL || connection -> isClosed()) {
-			throw runtime_error("DatabaseMetaData FAILURE - database connection closed");
+							result += "</row>";
+							result +='\n';
 		}
 
-
-		statement = connection->createStatement();
-		statement->executeQuery (query);
-
-		child->encapsulate((Types)type,0,result.c_str(),result.length());
+		child->encapsulate((Types)type,0,result.c_str(),result.length(), id);
 		return 0;
 
 	} catch (SQLException &e)
 	{
 		result = e.what();
-		child->encapsulate((Types)type,1,result.c_str(),result.length());
+		child->encapsulate((Types)type,1,result.c_str(),result.length(), id);
 		return 1;
 	}
 }

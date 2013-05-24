@@ -71,10 +71,10 @@ int Coupler::sendAndWait(const char* msg, int length)
 		{
 			return 4;
 		}
-		std::cout << "Odebrano odpowiedz: \"";
+		/*std::cout << "Odebrano odpowiedz: \"";
 		for(int i = 0; i < 10; ++i)
 			cout << response[i];
-		cout << "\"\n";
+		cout << "\"\n";*/
 		if(strcmp(response, "Ok") == 0)
 			resend = false;
 		else
@@ -152,10 +152,6 @@ int Coupler::waitForMessage(void)
 		}
 		buffer = new char[size+1];
 		dataLength = recv(sock, buffer, size, 0);
-		cout << "Odebrano buf: \"";
-		for(int i = 0; i < size; ++i)
-			cout << buffer[i];
-		cout << "\"\n";
 		if (dataLength == 0)										// client disconnected
 		{
 			cout << "Empty datalength 3\n";

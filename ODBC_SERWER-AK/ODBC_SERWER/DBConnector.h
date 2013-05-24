@@ -27,8 +27,7 @@ public:
 	DBConnector(Transporter *child);
 	~DBConnector(void);
 	int connect(string host, string user, string password, string db);
-	int executeQuery(string query, unsigned int id);
-	int executeStatement(string query, unsigned int type);
+	int executeQuery(string query, unsigned int type, unsigned int id);
 	string getResult() { return result; }
 };
 
