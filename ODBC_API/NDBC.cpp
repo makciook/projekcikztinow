@@ -45,7 +45,8 @@ bool NDBC::commit(void)
 		return false;
 	if(child->serialize(Types::DB_COMMIT, "COMMIT") != 0)
 	{
-		connected = false;
+		disconnect();
+		error = "Connection lost";
 		return false;
 	}
 	else
@@ -59,7 +60,8 @@ bool NDBC::rollback(void)
 		return false;
 	if(child->serialize(Types::DB_ROLLBACK, "ROLLBACK") != 0)
 	{
-		connected = false;
+		disconnect();
+		error = "Connection lost";
 		return false;
 	}
 	else
@@ -73,7 +75,8 @@ bool NDBC::transaction(void)
 		return false;
 	if(child->serialize(Types::DB_TRANSACTION, "START TRANSACTION") != 0)
 	{
-		connected = false;
+		disconnect();
+		error = "Connection lost";
 		return false;
 	}
 	else
@@ -128,7 +131,7 @@ bool NDBC::exec(Query *query)
 	if(ret != 0)
 	{
 		disconnect();
-		connected = false;
+		error = "Connection lost";
 		return false;
 	}
 	return true;

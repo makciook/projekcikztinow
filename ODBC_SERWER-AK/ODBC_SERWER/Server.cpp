@@ -1,15 +1,16 @@
 #include "Server.h"
 
+Server* Server::instance = NULL;
 
 Server::Server(unsigned int clients, unsigned int port)
 {
 	if (clients < 0)
 	{
-		this->clients = 10;
+		MAX_CLIENTS = 10;
 	}
 	else 
 	{
-		this->clients = clients;
+		MAX_CLIENTS = clients;
 	}
 
 	if (port < 0)
@@ -20,8 +21,9 @@ Server::Server(unsigned int clients, unsigned int port)
 	{
 		this->port = port;
 	}
+	this->clients = 0;
+	instance = this;
 
-	processConnections = 5;
     WSAStartup( MAKEWORD(2,2), &wsaData );
  
     sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -37,6 +39,13 @@ Server::~Server(void)
 	closesocket(sock);
 }
 
+void Server::handler(int sig)
+{
+	SCoupler::setClose(true);
+	WaitForMultipleObjects(instance->threads.size(), instance->threads.data(), true, 10000);
+	exit(0);
+}
+
 int Server::run(void)
 {
     WSAStartup( MAKEWORD(2,2), &wsaData );
@@ -47,8 +56,7 @@ int Server::run(void)
     saddr.sin_port = htons(27017);
     saddr.sin_addr.s_addr =inet_addr( "0.0.0.0" );
 
-	for(int i = 0; i < MAX_CLIENTS; ++i)
-		threads[i] = NULL;
+	signal(SIGILL, handler);
  
     if ( bind(sock, (sockaddr*)&saddr, sizeof(saddr)) == SOCKET_ERROR )
     {
@@ -65,6 +73,19 @@ int Server::run(void)
  
     while (1)
     {
+		DWORD free_id = 0;
+		if(threads.size() == MAX_CLIENTS)
+		{
+			free_id = WaitForMultipleObjects(MAX_CLIENTS, threads.data(), false, INFINITE);
+			if(free_id == WAIT_FAILED)
+			{
+				cout << GetLastError() << "\n";
+				continue;
+			}
+			free_id -= WAIT_OBJECT_0;
+			threads.erase(threads.begin() + free_id);
+		}
+
         client = accept(sock, NULL, NULL);
  
         if (client == INVALID_SOCKET)
@@ -76,36 +97,13 @@ int Server::run(void)
         }
         else
 		{
-			newId = -1;
-			for(int i = 0; i < MAX_CLIENTS; ++i)
-			{
-				if(threads[i] == NULL)
-				{
-					newId = i;
-					break;
-				}
-				DWORD result = WaitForSingleObject( threads[i], 0);
-
-				if (result == WAIT_OBJECT_0) {
-					newId = i;
-					break;
-				}
-			}
-			if (newId == -1)
-			{
-                cout << "Serwer jest pelen!\n";
-				//close socket
-            }
-            else
-            {
-				cout << "Przydzielilem " << newId << "\n";
-				threads[newId] = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
+			cout << "Przydzielilem " << free_id << "\n";
+			HANDLE thread = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
  
-                if (threads[newId] == NULL)
-                {
-                    cout << "Utworzenie watku dla klienta nie powiodlo sie." << endl;
-                }
-            }
+            if (thread == NULL)
+                cout << "Utworzenie watku dla klienta nie powiodlo sie." << endl;
+			else
+				threads.push_back(thread);
         }
     }
 

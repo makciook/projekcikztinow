@@ -1,6 +1,7 @@
 #include "SCoupler.h"
 #include "Crypter.h"
 
+bool SCoupler::close = false;
 
 SCoupler::SCoupler()
 {
@@ -15,7 +16,7 @@ SCoupler::SCoupler()
 SCoupler::~SCoupler(void)
 {
 	closesocket(sock);
-	delete this;					// suicide, zgodne ze standardem C++ 16.15
+
 }
 
 int SCoupler::waitForMessage()
@@ -27,17 +28,17 @@ int SCoupler::waitForMessage()
 	while(resend)
 	{
 		if(!read((char*)&size, sizeof(size)))
-			return 1;
+			return WSAGetLastError();
 		size = ntohl(size);
-		cout << "Odebrano size: " << size << "\n";
+		//cout << "Odebrano size: " << size << "\n";
 		char checksum[33];
 		if(!read(checksum, 32))
-			return 1;
+			return WSAGetLastError();
 		checksum[32] = '\0';
-		cout << "Odebrano suma: \"" << checksum << "\"\n";
+		//cout << "Odebrano suma: \"" << checksum << "\"\n";
 		buffer = new char[size+1];
 		if(!read(buffer, size))
-			return 1;
+			return WSAGetLastError();
 		buffer[size] = '\0';
 		string buf(buffer, size);
 		string checkSum(checksum);
@@ -47,19 +48,19 @@ int SCoupler::waitForMessage()
 			if(counter > 2)
 			{
 				if(write("2", 1) != 0)
-					return 2;
+					return WSAGetLastError();
 				cout << "Stopped send!\n";
 				return 5;
 			}
 			if(write("1", 1) != 0)
-				return 2;
+				return WSAGetLastError();
 			cout << "Error send\n";
 			resend = true;
 		}
 		else
 		{
 			if(write("0", 1) != 0)
-				return 2;
+				return WSAGetLastError();
 			cout << "Ok send\n";
 			resend = false;
 		}
@@ -78,12 +79,12 @@ int SCoupler::sendMessage(const char* msg, int length)
 	checkSum = md5(string(msg, length));
 	int bufSize = size+checkSum.length()+sizeof(size);
 	char *buffer = new char[bufSize];
-	cout << "Wysylam size: " << size << "\n";
+	/*cout << "Wysylam size: " << size << "\n";
 	cout << "wysylam suma: \"" << checkSum << "\"\n";
 	cout << "Wysylam msg: \"";
 	for(int i = 0; i < length; ++i)
 		cout << msg[i];
-	cout << "\"\n";
+	cout << "\"\n";*/
 	size = htonl(size);
 	memcpy(buffer, &size, sizeof(size));
 	memcpy(buffer+sizeof(size), checkSum.c_str(), checkSum.length());
@@ -94,12 +95,12 @@ int SCoupler::sendMessage(const char* msg, int length)
 	while(resend)
 	{
 		if(write(buffer, bufSize) != 0)
-			return 1;
+			return WSAGetLastError();
 		std::cout << "Czekam na odpowiedz\n";
 		if(!read(response, 1))
-			return 2;
+			return WSAGetLastError();
 		response[1] = '\0';
-
+		cout << "Odebrano: " << response << "\n";
 		if(strcmp(response, "0") == 0)
 			resend = false;
 		else
@@ -128,6 +129,11 @@ int SCoupler::run()
 	int ret;
 	while(true)
 	{
+		if(close == true)
+		{
+			this->~SCoupler();
+			break;
+		}
 		ret = this->waitForMessage();
 		if ( ret == 0 || ret == WSAECONNRESET || ret == WSAENETDOWN || ret == WSAENETRESET || ret == WSAECONNABORTED
 				|| ret == WSAESHUTDOWN || ret == WSAETIMEDOUT || ret == WSAECONNREFUSED || ret == WSAEHOSTDOWN)
@@ -144,6 +150,7 @@ DWORD WINAPI SCoupler::init (LPVOID ctx)
 	SCoupler *coup = new SCoupler();
 	coup->setSocket((SOCKET)ctx);
 	coup->run();
+	delete coup;
 	return 0;
 }
 
@@ -164,7 +171,7 @@ int SCoupler::readBytes(char* buf, int size)
 	if(dataLength >= 0)
 		return dataLength;
 	else														// winsock error
-		return -1;
+		return -1;												
 }
 
 bool SCoupler::read(char *buf, int size)
@@ -182,11 +189,11 @@ bool SCoupler::read(char *buf, int size)
 			received += ret;
 			need -= ret;
 		}
-		else if(ret == 0)										// timeout
+		else if(ret == -2)										// timeout
 		{
-			++s_counter;
-			if(s_counter > 3)
-				return false;
+			//++s_counter;
+			//if(s_counter > 3)
+			//	return false;
 		}
 		else
 			return false;
@@ -209,4 +216,9 @@ int SCoupler::write(char *buf, int size)
 	if(send(sock, buf, size, 0) == SOCKET_ERROR)
 		return -1;
 	return 0;
+}
+
+void SCoupler::setClose(bool cl)
+{
+	close = cl;
 }

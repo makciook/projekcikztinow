@@ -3,10 +3,10 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <signal.h>
+#include <vector>
 
 #include "SCoupler.h"
-
-#define MAX_CLIENTS     2
 
 using namespace std;
 
@@ -14,15 +14,17 @@ class Server
 {
 	unsigned int clients;
 	unsigned int port;
+	int MAX_CLIENTS;
 
 	WSADATA         wsaData;
     SOCKADDR_IN     saddr;
     SOCKET          client;
-    int             processConnections;
     int             newId;
-	HANDLE			threads[MAX_CLIENTS];
+	vector<HANDLE>	threads;
 
 	SOCKET          sock;
+	static void handler(int sig);
+	static Server *instance;
 public:
 	Server(unsigned int clients, unsigned int port);
 	~Server(void);

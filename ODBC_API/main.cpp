@@ -15,7 +15,7 @@ int main()
 	cout << q.getString(1);
 	q.next();
 	cout << q.getString(2);
-	//Sleep(3000);
+	Sleep(3000);
 	q.prepareQuery("SELECT * FROM maszyna LIMIT 10");
 	if(!test.exec(&q))
 		cout << "Error: " << test.getLastError();
