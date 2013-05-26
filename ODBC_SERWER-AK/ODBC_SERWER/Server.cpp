@@ -46,9 +46,8 @@ Server::~Server(void)
 //void Server::handler(int sig)//
 void Server::handler()//
 {
-	SCoupler::setClose(true);
+	SCoupler::close = true;
 	WaitForMultipleObjects(instance->threads.size(), instance->threads.data(), true, 10000);
-	std::cout<<"KTOS MNIE CHCE POPSUC !"<<std::endl;
 }
 
 int Server::run(void)
@@ -87,7 +86,8 @@ int Server::run(void)
 			handler();
 			break;
 		}
-
+		FD_ZERO(&fd);									//
+		FD_SET(sock, &fd);	
 		select(0, &fd, NULL, NULL, &tv);			//
 													
 			if(FD_ISSET(sock,&fd))					//
@@ -129,6 +129,6 @@ int Server::run(void)
 
 	closesocket(sock);
     WSACleanup();
-		
+
 	return 0;
 }

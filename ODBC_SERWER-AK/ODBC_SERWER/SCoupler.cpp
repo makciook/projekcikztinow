@@ -16,7 +16,6 @@ SCoupler::SCoupler()
 SCoupler::~SCoupler(void)
 {
 	closesocket(sock);
-
 }
 
 int SCoupler::waitForMessage()
@@ -129,13 +128,13 @@ int SCoupler::run()
 	int ret;
 	while(true)
 	{
-		if(close == true)
+		if(SCoupler::close == true)
 		{
 			this->~SCoupler();
 			break;
 		}
 		ret = this->waitForMessage();
-		if ( ret == 0 || ret == WSAECONNRESET || ret == WSAENETDOWN || ret == WSAENETRESET || ret == WSAECONNABORTED
+		if ( ret == WSAECONNRESET || ret == WSAENETDOWN || ret == WSAENETRESET || ret == WSAECONNABORTED
 				|| ret == WSAESHUTDOWN || ret == WSAETIMEDOUT || ret == WSAECONNREFUSED || ret == WSAEHOSTDOWN)
 		{
 			break;
@@ -191,9 +190,9 @@ bool SCoupler::read(char *buf, int size)
 		}
 		else if(ret == -2)										// timeout
 		{
-			//++s_counter;
-			//if(s_counter > 3)
-			//	return false;
+			++s_counter;
+			if(s_counter > 3)
+				return false;
 		}
 		else
 			return false;
@@ -216,9 +215,4 @@ int SCoupler::write(char *buf, int size)
 	if(send(sock, buf, size, 0) == SOCKET_ERROR)
 		return -1;
 	return 0;
-}
-
-void SCoupler::setClose(bool cl)
-{
-	close = cl;
 }

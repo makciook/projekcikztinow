@@ -15,7 +15,6 @@ class SCoupler
 	Crypter* parent;
 	SOCKET sock;
 	timeval tv;
-	static bool close;
 	bool read(char* buf, int size);
 	int readBytes(char* buf, int size);
 	int write(char *buf, int size);
@@ -27,6 +26,6 @@ public:
 	int waitForMessage();
 	int sendMessage(const char* msg, int length);
 	static DWORD WINAPI init (LPVOID ctx);
-	static void setClose(bool cl);
+	static bool close;
 };
 
