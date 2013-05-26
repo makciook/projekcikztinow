@@ -5,6 +5,7 @@
 #include <string>
 #include <signal.h>
 #include <vector>
+#include <conio.h>
 
 #include "SCoupler.h"
 
@@ -15,6 +16,7 @@ class Server
 	unsigned int clients;
 	unsigned int port;
 	int MAX_CLIENTS;
+	timeval tv;
 
 	WSADATA         wsaData;
     SOCKADDR_IN     saddr;
@@ -23,7 +25,8 @@ class Server
 	vector<HANDLE>	threads;
 
 	SOCKET          sock;
-	static void handler(int sig);
+	//static void handler(int sig);
+	static void handler();
 	static Server *instance;
 public:
 	Server(unsigned int clients, unsigned int port);

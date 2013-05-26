@@ -4,6 +4,10 @@ Server* Server::instance = NULL;
 
 Server::Server(unsigned int clients, unsigned int port)
 {
+	int timeout = 1500;
+    tv.tv_sec = (float)timeout/1000;
+    tv.tv_usec = (timeout%1000)*1000;
+
 	if (clients < 0)
 	{
 		MAX_CLIENTS = 10;
@@ -39,11 +43,12 @@ Server::~Server(void)
 	closesocket(sock);
 }
 
-void Server::handler(int sig)
+//void Server::handler(int sig)//
+void Server::handler()//
 {
 	SCoupler::setClose(true);
 	WaitForMultipleObjects(instance->threads.size(), instance->threads.data(), true, 10000);
-	exit(0);
+	std::cout<<"KTOS MNIE CHCE POPSUC !"<<std::endl;
 }
 
 int Server::run(void)
@@ -56,7 +61,7 @@ int Server::run(void)
     saddr.sin_port = htons(27017);
     saddr.sin_addr.s_addr =inet_addr( "0.0.0.0" );
 
-	signal(SIGILL, handler);
+	//signal(SIGILL, handler);
  
     if ( bind(sock, (sockaddr*)&saddr, sizeof(saddr)) == SOCKET_ERROR )
     {
@@ -71,40 +76,55 @@ int Server::run(void)
         return -2;
     }
  
+	fd_set fd;										//
+	FD_ZERO(&fd);									//
+	FD_SET(sock, &fd);								//
+
     while (1)
     {
-		DWORD free_id = 0;
-		if(threads.size() == MAX_CLIENTS)
+		if (kbhit())
 		{
-			free_id = WaitForMultipleObjects(MAX_CLIENTS, threads.data(), false, INFINITE);
-			if(free_id == WAIT_FAILED)
-			{
-				cout << GetLastError() << "\n";
-				continue;
-			}
-			free_id -= WAIT_OBJECT_0;
-			threads.erase(threads.begin() + free_id);
+			handler();
+			break;
 		}
 
-        client = accept(sock, NULL, NULL);
+		select(0, &fd, NULL, NULL, &tv);			//
+													
+			if(FD_ISSET(sock,&fd))					//
+			{
+				DWORD free_id = 0;
+				if(threads.size() == MAX_CLIENTS)
+				{
+					free_id = WaitForMultipleObjects(MAX_CLIENTS, threads.data(), false, INFINITE);
+					if(free_id == WAIT_FAILED)
+					{
+						cout << GetLastError() << "\n";
+						continue;
+					}
+					free_id -= WAIT_OBJECT_0;
+					threads.erase(threads.begin() + free_id);
+				}
+
+				client = accept(sock, NULL, NULL);
  
-        if (client == INVALID_SOCKET)
-        {
-            if (WSAGetLastError() == WSAECONNRESET)
-            {
-                cout << "WSAECONNRESET\n";
-            }
-        }
-        else
-		{
-			cout << "Przydzielilem " << free_id << "\n";
-			HANDLE thread = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
+				if (client == INVALID_SOCKET)
+				{
+					if (WSAGetLastError() == WSAECONNRESET)
+					{
+						cout << "WSAECONNRESET\n";
+					}
+				}
+				else
+				{
+					cout << "Przydzielilem " << free_id << "\n";
+					HANDLE thread = CreateThread (NULL, 0, SCoupler::init, (LPVOID)client, 0, NULL);
  
-            if (thread == NULL)
-                cout << "Utworzenie watku dla klienta nie powiodlo sie." << endl;
-			else
-				threads.push_back(thread);
-        }
+					if (thread == NULL)
+						cout << "Utworzenie watku dla klienta nie powiodlo sie." << endl;
+					else
+						threads.push_back(thread);
+				}
+			}
     }
 
 	closesocket(sock);
